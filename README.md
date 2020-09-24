@@ -129,6 +129,8 @@ If you have any feedback, bug-fix or remark, please contact [tfne@paulpauls.de](
 
 ### About ###
 
-Project developed by [Paul Pauls](https://github.com/PaulPauls) in collaboration with [Rezsa Farahani](https://www.linkedin.com/in/rezsa). \
-We would like to thank Google and the larger Tensorflow team, who have supported this project since the Google Summer of Code 2019!
+Project developed by [Paul Pauls](https://github.com/PaulPauls) in collaboration with [Rezsa Farahani](https://www.linkedin.com/in/rezsa).
 
+This is not an official Google product - even though the name may suggest otherwise. When TFNE was started there was no other neuroevolution framework available that kept the genome phenotype models compatible with any major machine learning framework. The _development name_ of the project was therefore simply chosen as the concatenation of the two aspects this project aimed to combine and it was carried over once the project became public. So far Google has not complained. =)
+
+We would also like to thank Google and the larger Tensorflow team, who have supported this project in the Google Summer of Code 2019!
