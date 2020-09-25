@@ -40,7 +40,7 @@ class DeepNEATGenome(BaseGenome,
     def __init__(self,
                  genome_id,
                  parent_mutation,
-                 origin_generation,
+                 generation,
                  input_shape,
                  genome_graph,
                  preprocessing_layers,
@@ -51,7 +51,7 @@ class DeepNEATGenome(BaseGenome,
         # Register parameters
         self.genome_id = genome_id
         self.parent_mutation = parent_mutation
-        self.origin_generation = origin_generation
+        self.generation = generation
         self.optimizer = optimizer
         self.dtype = dtype
 
