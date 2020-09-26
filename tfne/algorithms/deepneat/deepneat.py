@@ -3,11 +3,9 @@ import sys
 import json
 import random
 import statistics
-
-from absl import logging
 import tensorflow as tf
-
 import tfne
+from absl import logging
 from tfne.algorithms.base_algorithm import BaseNeuroevolutionAlgorithm
 from tfne.encodings.deepneat import DeepNEATGenome
 

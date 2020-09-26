@@ -1,10 +1,8 @@
 import os
-from datetime import datetime
-
 import ray
 import tensorflow as tf
-
-from .encodings.base_genome import BaseGenome
+from datetime import datetime
+from tfne.encodings.base_genome import BaseGenome
 
 
 class EvolutionEngine:

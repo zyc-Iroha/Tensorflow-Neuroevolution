@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-
 from tfne.encodings.base_genome import BaseGenome
 
 

@@ -1,11 +1,9 @@
 import sys
 import ast
+import tensorflow as tf
 from typing import Union, Any
 from configparser import ConfigParser
-
-import tensorflow as tf
 from PyQt5 import QtWidgets
-
 from tfne.visualizer import TFNEVWelcomeWindow
 
 
