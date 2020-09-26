@@ -8,9 +8,11 @@ import tfne
 from absl import logging
 from tfne.algorithms.base_algorithm import BaseNeuroevolutionAlgorithm
 from tfne.encodings.deepneat import DeepNEATGenome
+from ._deepneat_config_processing import DeepNEATConfigProcessing
 
 
-class DeepNEAT(BaseNeuroevolutionAlgorithm):
+class DeepNEAT(BaseNeuroevolutionAlgorithm,
+               DeepNEATConfigProcessing):
     """"""
 
     def __init__(self, config, initial_state=None):

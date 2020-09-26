@@ -5,14 +5,16 @@ from datetime import timedelta
 
 def deepneat_xor_example(_):
     """"""
-    # Set standard configuration specific to TFNE but not the neuroevolution process
+    # Set configuration specific to TFNE and the example, but not to the neuroevolutionary process. The details of the
+    # neuroevolutionary process are listed in the config file.
     logging_level = logging.INFO
     config_file_path = './deepneat_xor_dynamic_example_config.cfg'
     backup_dir_path = './tfne_state_backups/'
     max_generations = 64
     max_fitness = 100
     max_time = timedelta(days=0, hours=3, minutes=0, seconds=0)
-    epochs = 10
+    training_epochs = 10
+    final_epochs = 100
     batch_size = None
 
     # Set logging, parse config
@@ -21,7 +23,7 @@ def deepneat_xor_example(_):
 
     # Initialize the environment and the specific NE algorithm
     environment = tfne.environments.XOREnvironment(weight_training=True,
-                                                   epochs=epochs,
+                                                   epochs=training_epochs,
                                                    batch_size=batch_size,
                                                    verbosity=logging_level)
     ne_algorithm = tfne.algorithms.DeepNEAT(config=config)
@@ -34,15 +36,19 @@ def deepneat_xor_example(_):
                                   max_fitness=max_fitness,
                                   max_time=max_time)
 
-    # Start training process, returning the best genome when training ends
-    best_genome = engine.train()
-    print("Best genome returned by evolution:\n")
-    print(best_genome)
+    # Initiate training process
+    engine.train()
+
+    # Get the best genome and best consistent genome created by the neuroevolution algorithm
+    best_genome = ne_algorithm.get_best_genome()
+    best_consistent_genome = ne_algorithm.get_best_consistent_genome()
 
     # Increase epoch count in environment for a final training of the best genome. Train the genome and then replay it.
-    print("Training best genome for 100 epochs...\n")
+    print("Best genome returned by evolution:\n")
+    print(best_genome)
+    print(f"Training best genome for {final_epochs} epochs...\n")
     environment = tfne.environments.XOREnvironment(weight_training=True,
-                                                   epochs=100,
+                                                   epochs=final_epochs,
                                                    batch_size=batch_size,
                                                    verbosity=logging_level)
     environment.eval_genome_fitness(best_genome)
@@ -51,6 +57,20 @@ def deepneat_xor_example(_):
     # Serialize and save genotype and Tensorflow model to demonstrate serialization
     best_genome.save_genotype(save_dir_path='./best_genome_genotype/')
     best_genome.save_model(file_path='./best_genome_model/')
+
+    # If best genome and best consistent genome are different, then also evaluate that consistent genome for 100 epochs
+    if best_genome.get_id() != best_consistent_genome.get_id():
+        # Increase epoch count in environment for a final training of the best consistent genome. Train the genome and
+        # then replay it.
+        print("Best consistent genome returned by evolution:\n")
+        print(best_consistent_genome)
+        print(f"Training consistent best genome for {final_epochs} epochs...\n")
+        environment.eval_genome_fitness(best_consistent_genome)
+        environment.replay_genome(best_consistent_genome)
+
+        # Serialize and save genotype and Tensorflow model to demonstrate serialization
+        best_consistent_genome.save_genotype(save_dir_path='./best_consistent_genome_genotype/')
+        best_consistent_genome.save_model(file_path='./best_consistent_genome_model/')
 
 
 if __name__ == '__main__':
