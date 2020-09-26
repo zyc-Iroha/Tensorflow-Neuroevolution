@@ -56,6 +56,7 @@ class DeepNEATGenome(BaseGenome,
         self.dtype = dtype
 
         # Register genotype
+        self.input_shape = input_shape
         self.genome_graph = genome_graph
         self.preprocessing_layers = preprocessing_layers
         self.output_layers = output_layers
@@ -66,7 +67,7 @@ class DeepNEATGenome(BaseGenome,
 
         # Create model with genotype
         self.model = None
-        self._create_model(input_shape)
+        self._create_model()
 
     def __call__(self, inputs) -> tf.Tensor:
         """"""
@@ -95,9 +96,9 @@ class DeepNEATGenome(BaseGenome,
     def set_fitness(self, fitness):
         self.fitness = fitness
 
-    def get_genotype(self) -> ({int: Union[DeepNEATNode, DeepNEATConn]}, [dict], [dict], dict):
+    def get_genotype(self) -> (tuple, {int: Union[DeepNEATNode, DeepNEATConn]}, [dict], [dict], dict):
         """"""
-        return self.genome_graph, self.preprocessing_layers, self.output_layers, self.optimizer
+        return self.input_shape, self.genome_graph, self.preprocessing_layers, self.output_layers, self.optimizer
 
     def get_model(self) -> tf.keras.Model:
         """"""

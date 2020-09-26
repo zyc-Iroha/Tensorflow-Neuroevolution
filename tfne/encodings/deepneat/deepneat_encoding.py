@@ -65,7 +65,7 @@ class DeepNEATEncoding(BaseEncoding):
                       dtype) -> (int, DeepNEATGenome):
         """"""
         self.genome_id_counter += 1
-        # Genome genotype: (genome_graph, preprocessing_layers, output_layers, optimizer)
+        # Genome genotype: (input_shape, genome_graph, preprocessing_layers, output_layers, optimizer)
         return self.genome_id_counter, DeepNEATGenome(genome_id=self.genome_id_counter,
                                                       parent_mutation=parent_mutation,
                                                       generation=generation,
