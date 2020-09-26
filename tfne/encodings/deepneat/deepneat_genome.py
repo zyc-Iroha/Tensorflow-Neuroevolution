@@ -34,8 +34,7 @@ class DeepNEATConn:
         self.enabled = enabled
 
 
-class DeepNEATGenome(BaseGenome,
-                     DeepNEATModel):
+class DeepNEATGenome(BaseGenome):
     """"""
 
     def __init__(self,
@@ -66,8 +65,7 @@ class DeepNEATGenome(BaseGenome,
         self.fitness = None
 
         # Create model with genotype
-        self.model = None
-        self._create_model()
+        self.model = DeepNEATModel(input_shape, genome_graph, preprocessing_layers, output_layers, optimizer, dtype)
 
     def __call__(self, inputs) -> tf.Tensor:
         """"""
