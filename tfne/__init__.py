@@ -7,7 +7,7 @@ from tfne import experimental
 from tfne import populations
 from tfne import visualizer
 
-# Import general modules
+# Import modules
 from tfne.evolution_engine import EvolutionEngine
 
 # Import functions
