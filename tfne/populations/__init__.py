@@ -1,3 +1,3 @@
 # Import modules
-from tfne.populations.base_population import BasePopulation
-from tfne.populations.codeepneat import CoDeepNEATPopulation
+from tfne.populations.deepneat.deepneat_population import DeepNEATPopulation
+from tfne.populations.codeepneat.codeepneat_population import CoDeepNEATPopulation
