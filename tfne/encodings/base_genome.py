@@ -1,7 +1,6 @@
-from typing import Union, Any
-from abc import ABCMeta, abstractmethod
-
 import tensorflow as tf
+from abc import ABCMeta, abstractmethod
+from typing import Union, Any
 
 
 class BaseGenome(object, metaclass=ABCMeta):

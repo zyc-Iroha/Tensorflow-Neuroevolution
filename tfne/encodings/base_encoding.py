@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-
 from .base_genome import BaseGenome
 
 

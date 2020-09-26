@@ -1,5 +1,5 @@
-from .deepneat_genome import DeepNEATGenome, DeepNEATNode, DeepNEATConn
 from tfne.encodings.base_encoding import BaseEncoding
+from .deepneat_genome import DeepNEATGenome, DeepNEATNode, DeepNEATConn
 
 
 class DeepNEATEncoding(BaseEncoding):

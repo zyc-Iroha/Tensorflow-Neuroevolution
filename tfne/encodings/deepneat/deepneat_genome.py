@@ -3,12 +3,10 @@ import json
 import tempfile
 import platform
 import subprocess
-from typing import Union
-
 import tensorflow as tf
-
-from .deepneat_model import DeepNEATModel
+from typing import Union
 from tfne.encodings.base_genome import BaseGenome
+from .deepneat_model import DeepNEATModel
 
 
 class DeepNEATNode:
