@@ -17,7 +17,8 @@ class EvolutionEngine:
                  environment,
                  backup_dir_path,
                  max_generations=None,
-                 max_fitness=None):
+                 max_fitness=None,
+                 max_time=None):
         """
         Creates a new evolutionary engine instance that initializes the multiprocessing library, creates TFNE state
         backup directories and sets up evaluation environments in order to prepare for the eventual training process.

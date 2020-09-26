@@ -1,58 +1,33 @@
 from __future__ import annotations
-
 import numpy as np
 import tensorflow as tf
-
-from .base_environment import BaseEnvironment
-from tfne.helper_functions import read_option_from_config
+from tfne.environments.base_environment import BaseEnvironment
 
 
 class XOREnvironment(BaseEnvironment):
-    """
-    TFNE compatible environment for the XOR problem
-    """
+    """"""
 
-    def __init__(self, weight_training, config=None, verbosity=0, **kwargs):
-        """
-        Initializes XOR environment by setting up the dataset and processing the supplied config or supplied config
-        parameters. The configuration of the environment can either be supplied via a config file or via seperate config
-        parameters in the initialization.
-        @param weight_training: bool flag, indicating wether evaluation should be weight training or not
-        @param config: ConfigParser instance holding an 'Environment' section specifying the required environment
-                       parameters for the chosen evaluation method.
-        @param verbosity: integer specifying the verbosity of the evaluation
-        @param kwargs: Optionally supplied dict of each configuration parameter seperately in order to allow the
-                       creation of the evaluation environment without the requirement of a config file.
-        """
+    def __init__(self, weight_training, epochs=None, batch_size=None, verbosity=0):
+        """"""
         # Initialize corresponding input and output mappings
         print("Setting up XOR environment...")
         self.x = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         self.y = np.array([[0], [1], [1], [0]])
 
-        # Initialize loss function to evaluate performance on either evaluation method and safe verbosity parameter
+        # Initialize loss function to evaluate performance on either evaluation method
         self.loss_function = tf.keras.losses.BinaryCrossentropy()
+        self.weight_training = weight_training
         self.verbosity = verbosity
 
         # Determine and setup explicit evaluation method in accordance to supplied parameters
-        if not weight_training:
+        if weight_training:
+            # Set up XOR environment as weight training and register parameters
+            self.eval_genome_fitness = self._eval_genome_fitness_weight_training
+            self.epochs = epochs
+            self.batch_size = batch_size
+        else:
             # Set up XOR environment as non-weight training, requiring no parameters
             self.eval_genome_fitness = self._eval_genome_fitness_non_weight_training
-
-        elif config is None and len(kwargs) == 0:
-            raise RuntimeError("XOR environment is being set up as weight training, though neither config file nor "
-                               "explicit config parameters for the weight training were supplied")
-
-        elif len(kwargs) == 0:
-            # Set up XOR environment as weight training and with a supplied config file
-            self.eval_genome_fitness = self._eval_genome_fitness_weight_training
-            self.epochs = read_option_from_config(config, 'EVALUATION', 'epochs')
-            self.batch_size = read_option_from_config(config, 'EVALUATION', 'batch_size')
-
-        elif config is None:
-            # Set up XOR environment as weight training and explicitely supplied parameters
-            self.eval_genome_fitness = self._eval_genome_fitness_weight_training
-            self.epochs = kwargs['epochs']
-            self.batch_size = kwargs['batch_size']
 
     def eval_genome_fitness(self, genome) -> float:
         # TO BE OVERRIDEN
@@ -77,8 +52,8 @@ class XOREnvironment(BaseEnvironment):
         # Evaluate and return its fitness
         evaluated_fitness = float(100 * (1 - self.loss_function(self.y, model(self.x))))
 
-        # FIXME Tensorflow arbitrary NaN loss when using float16 datatype. Confirmed by TF.
-        # Github TF issue: https://github.com/tensorflow/tensorflow/issues/38457
+        # Check if model is possibly overflowing or underflowing when using dtype float16, which is probable for this
+        # problem environment.
         if tf.math.is_nan(evaluated_fitness):
             evaluated_fitness = 0
 
@@ -107,11 +82,9 @@ class XOREnvironment(BaseEnvironment):
         print("Achieved Fitness:\t{}\n".format(evaluated_fitness))
 
     def duplicate(self) -> XOREnvironment:
-        """
-        @return: New instance of the XOR environment with identical parameters
-        """
-        if hasattr(self, 'epochs'):
-            return XOREnvironment(True, verbosity=self.verbosity, epochs=self.epochs, batch_size=self.batch_size)
+        """"""
+        if self.weight_training:
+            return XOREnvironment(True, epochs=self.epochs, batch_size=self.batch_size, verbosity=self.verbosity)
         else:
             return XOREnvironment(False, verbosity=self.verbosity)
 
