@@ -2,7 +2,7 @@ import tensorflow as tf
 from tfne.helper_functions import read_option_from_config
 
 
-class CoDeepNEATConfigProcessing:
+class NEATConfigProcessing:
     def _process_config(self):
         """"""
         pass

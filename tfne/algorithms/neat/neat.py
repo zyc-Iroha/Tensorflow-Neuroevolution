@@ -7,12 +7,12 @@ import tensorflow as tf
 import tfne
 from absl import logging
 from tfne.algorithms.base_algorithm import BaseNeuroevolutionAlgorithm
-from tfne.encodings.codeepneat import CoDeepNEATGenome
-from ._codeepneat_config_processing import CoDeepNEATConfigProcessing
+from tfne.encodings.neat import NEATGenome
+from ._neat_config_processing import NEATConfigProcessing
 
 
-class CoDeepNEAT(BaseNeuroevolutionAlgorithm,
-                 CoDeepNEATConfigProcessing):
+class NEAT(BaseNeuroevolutionAlgorithm,
+           NEATConfigProcessing):
     """"""
 
     def __init__(self, config, initial_state=None):
@@ -39,14 +39,10 @@ class CoDeepNEAT(BaseNeuroevolutionAlgorithm,
         """"""
         pass
 
-    def get_best_genome(self) -> CoDeepNEATGenome:
-        """"""
-        pass
-
-    def get_best_consistent_genome(self) -> CoDeepNEATGenome:
+    def get_best_genome(self) -> NEATGenome:
         """"""
         pass
 
     def get_eval_instance_count(self) -> int:
         """"""
-        return 1
+        pass

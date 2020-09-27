@@ -7,12 +7,12 @@ import tensorflow as tf
 import tfne
 from absl import logging
 from tfne.algorithms.base_algorithm import BaseNeuroevolutionAlgorithm
-from tfne.encodings.codeepneat import CoDeepNEATGenome
-from ._codeepneat_config_processing import CoDeepNEATConfigProcessing
+from tfne.encodings.subgraphdeepneat import SubGraphDeepNEATGenome
+from ._subgraphdeepneat_config_processing import SubGraphDeepNEATConfigProcessing
 
 
-class CoDeepNEAT(BaseNeuroevolutionAlgorithm,
-                 CoDeepNEATConfigProcessing):
+class SubGraphDeepNEAT(BaseNeuroevolutionAlgorithm,
+                       SubGraphDeepNEATConfigProcessing):
     """"""
 
     def __init__(self, config, initial_state=None):
@@ -39,11 +39,11 @@ class CoDeepNEAT(BaseNeuroevolutionAlgorithm,
         """"""
         pass
 
-    def get_best_genome(self) -> CoDeepNEATGenome:
+    def get_best_genome(self) -> SubGraphDeepNEATGenome:
         """"""
         pass
 
-    def get_best_consistent_genome(self) -> CoDeepNEATGenome:
+    def get_best_consistent_genome(self) -> SubGraphDeepNEATGenome:
         """"""
         pass
 
