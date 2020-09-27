@@ -5,7 +5,7 @@ Welcome to the documentation of the Tensorflow-Neuroevolution framework!
    :width: 50%
    :align: center
 
-**Version 0.21.1**
+**Version** |version_string_bold|
 
 .. image:: https://img.shields.io/badge/python-v3.7%2B-informational
 

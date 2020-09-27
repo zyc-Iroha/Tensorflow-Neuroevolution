@@ -4,8 +4,8 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import datetime
 import sphinx_rtd_theme
-
 
 # -- Path setup --------------------------------------------------------------
 
@@ -17,17 +17,26 @@ import sphinx_rtd_theme
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+# -- Preprocessing of information for Project information --------------------
+
+with open("../../README.md", "r") as readme:
+    long_description = readme.read()
+
+version_string_start = long_description.find("**Version ") + 10
+version_string_end = long_description.find("**", version_string_start)
+version_string = long_description[version_string_start:version_string_end]
+
+year = datetime.datetime.now().year
 
 # -- Project information -----------------------------------------------------
 
 master_doc = 'index'
 project = 'Tensorflow-Neuroevolution Framework'
-copyright = '2020, Paul Pauls'
+copyright = f'{year}, Paul Pauls'
 author = 'Paul Pauls'
 
 # The full version, including alpha/beta/rc tags
-release = '0.21.1'
-
+release = version_string
 
 # -- General configuration ---------------------------------------------------
 
@@ -45,7 +54,6 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -54,9 +62,12 @@ exclude_patterns = []
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# Make version number variable available to documentation rst files
+rst_epilog = """
+.. |version_string_bold| replace:: **{version_string}**
+""".format(version_string=version_string)

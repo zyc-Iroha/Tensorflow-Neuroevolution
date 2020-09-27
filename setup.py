@@ -3,9 +3,13 @@ import setuptools
 with open("README.md", "r") as readme:
     long_description = readme.read()
 
+version_string_start = long_description.find("**Version ") + 10
+version_string_end = long_description.find("**", version_string_start)
+version_string = long_description[version_string_start:version_string_end]
+
 setuptools.setup(
     name='tfne',
-    version='0.21.1',
+    version=version_string,
     scripts=['tfne_visualizer'],
     author='Paul Pauls',
     author_email='tfne@paulpauls.de',

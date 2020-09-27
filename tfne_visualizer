@@ -1,9 +1,6 @@
 #!python3
-
 import sys
-
 from PyQt5 import QtWidgets
-
 from tfne.visualizer import TFNEVWelcomeWindow
 
 if __name__ == '__main__':
