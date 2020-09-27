@@ -1,8 +1,8 @@
 from tfne.encodings.base_encoding import BaseEncoding
-from .codeepneat_genome import CoDeepNEATGenome
+from .neat_genome import NEATGenome, NEATNode, NEATConn
 
 
-class CoDeepNEATEncoding(BaseEncoding):
+class NEATEncoding(BaseEncoding):
     """"""
 
     def __init__(self, initial_state=None):

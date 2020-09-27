@@ -1,8 +1,8 @@
 from tfne.encodings.base_encoding import BaseEncoding
-from .codeepneat_genome import CoDeepNEATGenome
+from .subgraphneat_genome import SubGraphNEATGenome
 
 
-class CoDeepNEATEncoding(BaseEncoding):
+class SubGraphNEATEncoding(BaseEncoding):
     """"""
 
     def __init__(self, initial_state=None):

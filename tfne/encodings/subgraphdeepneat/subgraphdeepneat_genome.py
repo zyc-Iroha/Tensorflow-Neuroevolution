@@ -6,10 +6,10 @@ import subprocess
 import tensorflow as tf
 from typing import Union
 from tfne.encodings.base_genome import BaseGenome
-from .codeepneat_model import CoDeepNEATModel
+from .subgraphdeepneat_model import SubGraphDeepNEATModel
 
 
-class CoDeepNEATGenome(BaseGenome):
+class SubGraphDeepNEATGenome(BaseGenome):
     """"""
 
     def __init__(self,

@@ -6,10 +6,27 @@ import subprocess
 import tensorflow as tf
 from typing import Union
 from tfne.encodings.base_genome import BaseGenome
-from .codeepneat_model import CoDeepNEATModel
+from .neat_model import NEATModel
 
 
-class CoDeepNEATGenome(BaseGenome):
+class NEATNode:
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+
+class NEATConn:
+    """"""
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def set_enabled(self, enabled):
+        self.enabled = enabled
+
+
+class NEATGenome(BaseGenome):
     """"""
 
     def __init__(self,
@@ -50,10 +67,6 @@ class CoDeepNEATGenome(BaseGenome):
         raise NotImplementedError("TODO")
 
     def get_model(self) -> tf.keras.Model:
-        """"""
-        raise NotImplementedError("TODO")
-
-    def get_optimizer(self) -> tf.keras.optimizers.Optimizer:
         """"""
         raise NotImplementedError("TODO")
 

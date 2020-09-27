@@ -6,10 +6,10 @@ import subprocess
 import tensorflow as tf
 from typing import Union
 from tfne.encodings.base_genome import BaseGenome
-from .codeepneat_model import CoDeepNEATModel
+from .subgraphneat_model import SubGraphNEATModel
 
 
-class CoDeepNEATGenome(BaseGenome):
+class SubGraphNEATGenome(BaseGenome):
     """"""
 
     def __init__(self,
@@ -50,10 +50,6 @@ class CoDeepNEATGenome(BaseGenome):
         raise NotImplementedError("TODO")
 
     def get_model(self) -> tf.keras.Model:
-        """"""
-        raise NotImplementedError("TODO")
-
-    def get_optimizer(self) -> tf.keras.optimizers.Optimizer:
         """"""
         raise NotImplementedError("TODO")
 
