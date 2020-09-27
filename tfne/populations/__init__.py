@@ -1,3 +1,6 @@
 # Import modules
+from tfne.populations.neat.neat_population import NEATPopulation
 from tfne.populations.deepneat.deepneat_population import DeepNEATPopulation
 from tfne.populations.codeepneat.codeepneat_population import CoDeepNEATPopulation
+from tfne.populations.subgraphneat.subgraphneat_population import SubGraphNEATPopulation
+from tfne.populations.subgraphdeepneat.subgraphdeepneat_population import SubGraphDeepNEATPopulation

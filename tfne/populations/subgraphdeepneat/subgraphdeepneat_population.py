@@ -2,7 +2,7 @@ import statistics
 from tfne.populations.base_population import BasePopulation
 
 
-class CoDeepNEATPopulation(BasePopulation):
+class SubGraphDeepNEATPopulation(BasePopulation):
     """"""
 
     def __init__(self, initial_state=None):
