@@ -15,16 +15,16 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
                DeepNEATConfigProcessing):
     """"""
 
-    def __init__(self, config, initial_state=None):
+    def __init__(self, config, input_shape, output_shape, initial_state=None):
         """"""
         # Register and process the supplied configuration
         self.config = config
         self._process_config()
         self._sanity_check_config()
 
-        # Declare variables of environment shapes to which the created genomes have to adhere to
-        self.input_shape = None
-        self.output_shape = None
+        # Register variables of environment shapes to which the created genomes have to adhere to
+        self.input_shape = input_shape
+        self.output_shape = output_shape
 
         # If an initial state of the evolution was supplied, load and recreate this state for the algorithm as well as
         # its dependencies
@@ -36,7 +36,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
             self.enc = tfne.encodings.DeepNEATEncoding()
             self.pop = tfne.populations.DeepNEATPopulation()
 
-    def initialize_population(self, environment):
+    def initialize_population(self):
         """"""
         pass
 

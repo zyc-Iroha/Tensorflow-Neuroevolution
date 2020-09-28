@@ -15,11 +15,11 @@ class SubGraphDeepNEAT(BaseNeuroevolutionAlgorithm,
                        SubGraphDeepNEATConfigProcessing):
     """"""
 
-    def __init__(self, config, initial_state=None):
+    def __init__(self, config, input_shape, output_shape, initial_state=None):
         """"""
         pass
 
-    def initialize_population(self, environment):
+    def initialize_population(self):
         """"""
         pass
 

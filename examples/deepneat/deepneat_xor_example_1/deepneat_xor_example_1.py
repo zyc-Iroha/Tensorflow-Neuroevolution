@@ -3,12 +3,12 @@ from absl import app, logging
 from datetime import timedelta
 
 
-def deepneat_xor_example(_):
+def deepneat_xor_example_1(_):
     """"""
     # Set configuration specific to TFNE and the example, but not to the neuroevolutionary process. The details of the
     # neuroevolutionary process are listed in the config file.
     logging_level = logging.INFO
-    config_file_path = './deepneat_xor_dynamic_example_config.cfg'
+    config_file_path = './deepneat_xor_example_1_config.cfg'
     backup_dir_path = './tfne_state_backups/'
     max_generations = 64
     max_fitness = 100
@@ -21,12 +21,18 @@ def deepneat_xor_example(_):
     logging.set_verbosity(logging_level)
     config = tfne.parse_configuration(config_file_path)
 
-    # Initialize the environment and the specific NE algorithm
+    # Initialize the environment and determine the input and output shapes genome phenotypes have to abide by
     environment = tfne.environments.XOREnvironment(weight_training=True,
                                                    epochs=training_epochs,
                                                    batch_size=batch_size,
                                                    verbosity=logging_level)
-    ne_algorithm = tfne.algorithms.DeepNEAT(config=config)
+    env_input_shape = environment.get_input_shape()
+    env_output_shape = environment.get_output_shape()
+
+    # Initialize the chosen neuroevolution algorithm
+    ne_algorithm = tfne.algorithms.DeepNEAT(config=config,
+                                            input_shape=env_input_shape,
+                                            output_shape=env_output_shape)
 
     # Initialize evolution engine and supply config as well as initialized NE algorithm and evaluation environment.
     engine = tfne.EvolutionEngine(ne_algorithm=ne_algorithm,
@@ -74,4 +80,4 @@ def deepneat_xor_example(_):
 
 
 if __name__ == '__main__':
-    app.run(deepneat_xor_example)
+    app.run(deepneat_xor_example_1)

@@ -9,11 +9,9 @@ class BaseNeuroevolutionAlgorithm(object, metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def initialize_population(self, environment):
+    def initialize_population(self):
         """
-        Initialize the population according to the specified NE algorithm. Adhere to potential constraints set by the
-        environment.
-        @param environment: one instance or multiple instances of the evaluation environment
+        Initialize the population according to the specified NE algorithm.
         """
         raise NotImplementedError("Subclass of BaseNeuroevolutionAlgorithm does not implement "
                                   "'initialize_population()'")
