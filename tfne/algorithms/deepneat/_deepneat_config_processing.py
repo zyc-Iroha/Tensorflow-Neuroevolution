@@ -86,6 +86,22 @@ class DeepNEATConfigProcessing:
 
             self.optimizer_params[available_optimizer] = params
 
+        # COMMENT
+        self.preprocessing_params = dict()
+        for preprocessing_layer in self.preprocessing_layers:
+            config_section_str = 'PREPROCESSING_' + preprocessing_layer.upper()
+            if not self.config.has_section(config_section_str):
+                raise RuntimeError("COMMENT")
+
+            params = dict()
+            for param in self.config.options(config_section_str):
+                tmp = read_option_from_config(self.config, config_section_str, param)
+                if isinstance(tmp, dict) and 'stddev' not in tmp:
+                    tmp['stddev'] = (tmp['max'] - tmp['min']) / 10
+                params[param] = tmp
+
+            self.preprocessing_params[preprocessing_layer] = params
+
     def _sanity_check_config(self):
         """"""
         pass

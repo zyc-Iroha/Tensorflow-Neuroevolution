@@ -5,8 +5,27 @@ from .deepneat_genome import DeepNEATGenome, DeepNEATNode, DeepNEATConn
 class DeepNEATEncoding(BaseEncoding):
     """"""
 
-    def __init__(self, initial_state=None):
+    def __init__(self,
+                 input_shape,
+                 input_layers,
+                 output_layers,
+                 recurrent_stateful,
+                 recurrent_init,
+                 input_scaling,
+                 merge_method,
+                 dtype,
+                 initial_state=None):
         """"""
+        # Register encoding parameters
+        self.input_shape = input_shape
+        self.input_layers = input_layers
+        self.output_layers = output_layers
+        self.recurrent_stateful = recurrent_stateful
+        self.recurrent_init = recurrent_init
+        self.input_scaling = input_scaling
+        self.merge_method = merge_method
+        self.dtype = dtype
+
         # Initialize internal counter variables
         self.genome_id_counter = 0
         self.gene_id_counter = 0
@@ -57,24 +76,26 @@ class DeepNEATEncoding(BaseEncoding):
     def create_genome(self,
                       parent_mutation,
                       generation,
-                      input_shape,
                       genome_graph,
                       preprocessing_layers,
-                      output_layers,
-                      optimizer,
-                      dtype) -> (int, DeepNEATGenome):
+                      optimizer) -> (int, DeepNEATGenome):
         """"""
         self.genome_id_counter += 1
-        # Genome genotype: (input_shape, genome_graph, preprocessing_layers, output_layers, optimizer)
+        # Genome genotype: (genome_graph, preprocessing_layers, optimizer)
         return self.genome_id_counter, DeepNEATGenome(genome_id=self.genome_id_counter,
                                                       parent_mutation=parent_mutation,
                                                       generation=generation,
-                                                      input_shape=input_shape,
                                                       genome_graph=genome_graph,
                                                       preprocessing_layers=preprocessing_layers,
-                                                      output_layers=output_layers,
                                                       optimizer=optimizer,
-                                                      dtype=dtype)
+                                                      input_shape=self.input_shape,
+                                                      input_layers=self.input_layers,
+                                                      output_layers=self.output_layers,
+                                                      recurrent_stateful=self.recurrent_stateful,
+                                                      recurrent_init=self.recurrent_init,
+                                                      input_scaling=self.input_scaling,
+                                                      merge_method=self.merge_method,
+                                                      dtype=self.dtype)
 
     def serialize(self) -> dict:
         """"""

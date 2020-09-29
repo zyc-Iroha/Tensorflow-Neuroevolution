@@ -39,31 +39,53 @@ class DeepNEATGenome(BaseGenome):
                  genome_id,
                  parent_mutation,
                  generation,
-                 input_shape,
                  genome_graph,
                  preprocessing_layers,
-                 output_layers,
                  optimizer,
+                 input_shape,
+                 input_layers,
+                 output_layers,
+                 recurrent_stateful,
+                 recurrent_init,
+                 input_scaling,
+                 merge_method,
                  dtype):
         """"""
-        # Register parameters
+        # Register genome parameters
         self.genome_id = genome_id
         self.parent_mutation = parent_mutation
         self.generation = generation
-        self.dtype = dtype
 
         # Register genotype
-        self.input_shape = input_shape
         self.genome_graph = genome_graph
         self.preprocessing_layers = preprocessing_layers
-        self.output_layers = output_layers
         self.optimizer = optimizer
+
+        # Register immutable phenotype parameters
+        self.input_shape = input_shape
+        self.input_layers = input_layers
+        self.output_layers = output_layers
+        self.recurrent_stateful = recurrent_stateful
+        self.recurrent_init = recurrent_init
+        self.input_scaling = input_scaling
+        self.merge_method = merge_method
+        self.dtype = dtype
 
         # Initialize internal variables
         self.fitness = None
 
         # Create model with genotype
-        self.model = DeepNEATModel(input_shape, genome_graph, preprocessing_layers, output_layers, optimizer, dtype)
+        self.model = DeepNEATModel(genome_graph,
+                                   preprocessing_layers,
+                                   optimizer,
+                                   input_shape,
+                                   input_layers,
+                                   output_layers,
+                                   recurrent_stateful,
+                                   recurrent_init,
+                                   input_scaling,
+                                   merge_method,
+                                   dtype)
 
     def __call__(self, inputs) -> tf.Tensor:
         """"""
@@ -92,9 +114,9 @@ class DeepNEATGenome(BaseGenome):
     def set_fitness(self, fitness):
         self.fitness = fitness
 
-    def get_genotype(self) -> (tuple, {int: Union[DeepNEATNode, DeepNEATConn]}, [dict], [dict], dict):
+    def get_genotype(self) -> ({int: Union[DeepNEATNode, DeepNEATConn]}, [dict], dict):
         """"""
-        return self.input_shape, self.genome_graph, self.preprocessing_layers, self.output_layers, self.optimizer
+        return self.genome_graph, self.preprocessing_layers, self.optimizer
 
     def get_model(self) -> tf.keras.Model:
         """"""

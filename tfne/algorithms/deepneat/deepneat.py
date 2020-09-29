@@ -32,8 +32,15 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
             # Load the backed up state for the algorithm from file
             raise NotImplementedError("TODO")
         else:
-            # Initialize and register a blank associated DeepNEAT encoding and population
-            self.enc = tfne.encodings.DeepNEATEncoding()
+            # Initialize a new associated DeepNEAT encoding and population
+            self.enc = tfne.encodings.DeepNEATEncoding(self.input_shape,
+                                                       self.input_layers,
+                                                       self.output_layers,
+                                                       self.recurrent_stateful,
+                                                       self.recurrent_init,
+                                                       self.input_scaling,
+                                                       self.merge_method,
+                                                       self.dtype)
             self.pop = tfne.populations.DeepNEATPopulation()
 
     def initialize_population(self):
