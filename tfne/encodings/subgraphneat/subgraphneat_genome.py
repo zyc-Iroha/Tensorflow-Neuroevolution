@@ -45,7 +45,7 @@ class SubGraphNEATGenome(BaseGenome):
     def set_fitness(self, fitness):
         raise NotImplementedError("TODO")
 
-    def get_genotype(self) -> (???):
+    def get_genotype(self) -> ():
         """"""
         raise NotImplementedError("TODO")
 

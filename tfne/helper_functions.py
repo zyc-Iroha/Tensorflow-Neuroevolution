@@ -1,5 +1,6 @@
 import sys
 import ast
+import numpy as np
 import tensorflow as tf
 from typing import Union, Any
 from configparser import ConfigParser
@@ -30,6 +31,25 @@ def read_option_from_config(config, section, option) -> Any:
     value = ast.literal_eval(config[section][option])
     print("Config value for '{}/{}': {}".format(section, option, value))
     return value
+
+
+def create_list_with_probabilities(input) -> (list, [float]):
+    """"""
+    if isinstance(input, dict):
+        input_list = []
+        probs = []
+        for key, value in input.items():
+            input_list.append(key)
+            probs.append(value)
+        input_probs = np.array(probs) / np.sum(np.array(probs))
+    elif isinstance(input, list):
+        input_list = input
+        input_probs = None
+    else:
+        input_list = [input]
+        input_probs = None
+    return input_list, input_probs
+
 
 
 def round_with_step(value, minimum, maximum, step) -> Union[int, float]:

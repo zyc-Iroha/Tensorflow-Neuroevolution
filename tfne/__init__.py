@@ -1,11 +1,11 @@
 # Import packages
 from tfne import algorithms
-from tfne import deserialization
+#from tfne import deserialization
 from tfne import encodings
 from tfne import environments
 from tfne import experimental
 from tfne import populations
-from tfne import visualizer
+#from tfne import visualizer
 
 # Import modules
 from tfne.evolution_engine import EvolutionEngine
