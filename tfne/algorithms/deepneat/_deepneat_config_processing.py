@@ -8,8 +8,7 @@ class DeepNEATConfigProcessing:
         # COMMENT
         self.pop_size = read_option_from_config(self.config, 'GENERAL', 'pop_size')
         self.consistency_evals = read_option_from_config(self.config, 'GENERAL', 'consistency_evals')
-        tmp = read_option_from_config(self.config, 'GENERAL', 'available_layers')
-        self.available_layers, self.available_layers_p = create_list_with_probabilities(tmp)
+        self.available_layers_raw = read_option_from_config(self.config, 'GENERAL', 'available_layers')
         tmp = read_option_from_config(self.config, 'GENERAL', 'available_optimizers')
         self.available_optimizers, self.available_optimizers_p = create_list_with_probabilities(tmp)
 
@@ -23,6 +22,14 @@ class DeepNEATConfigProcessing:
         self.preprocessing_layers = read_option_from_config(self.config, 'GENOME', 'preprocessing_layers')
         self.input_layers = read_option_from_config(self.config, 'GENOME', 'input_layers')
         self.output_layers = read_option_from_config(self.config, 'GENOME', 'output_layers')
+
+        # COMMENT
+        if self.preprocessing_layers is None:
+            self.preprocessing_layers = []
+        if self.input_layers is None:
+            self.input_layers = []
+        if self.output_layers is None:
+            self.output_layers = []
 
         # COMMENT
         self.spec_type = read_option_from_config(self.config, 'SPECIATION', 'spec_type')
@@ -56,7 +63,7 @@ class DeepNEATConfigProcessing:
 
         # COMMENT
         self.layer_params = dict()
-        for available_layer in self.available_layers:
+        for available_layer in self.available_layers_raw.keys():
             config_section_str = 'LAYER_' + available_layer.upper()
             if not self.config.has_section(config_section_str):
                 raise RuntimeError("COMMENT")
@@ -101,6 +108,68 @@ class DeepNEATConfigProcessing:
                 params[param] = tmp
 
             self.preprocessing_params[preprocessing_layer] = params
+
+    def _process_available_layers(self):
+        """"""
+        # FIXME! PROTOTYPE ASSUMPTION: maximum layer input dimension of 4 (+1 batch_size)
+        layer_input_dim_assumptions = {
+            'Activation': {2, 3, 4, 5},
+            'AlphaDropout': {2, 3, 4, 5},
+            'AveragePooling1D': {3},
+            'AveragePooling2D': {4},
+            'AveragePooling3D': {5},
+            'BatchNormalization': {2, 3, 4, 5},
+            'Conv1D': {3, 4, 5},
+            'Conv1DTranspose': {3},
+            'Conv2D': {4, 5},
+            'Conv2DTranspose': {4},
+            'Conv3D': {5},
+            'Conv3DTranspose': {5},
+            'ConvLSTM2D': {5},
+            'Dense': {2, 3, 4, 5},
+            'DepthwiseConv2D': {4},
+            'Dropout': {2, 3, 4, 5},
+            'Flatten': {2, 3, 4, 5},
+            'GaussianDropout': {2, 3, 4, 5},
+            'GaussianNoise': {2, 3, 4, 5},
+            'GlobalAveragePooling1D': {3},
+            'GlobalAveragePooling2D': {4},
+            'GlobalAveragePooling3D': {5},
+            'GlobalMaxPool1D': {3},
+            'GlobalMaxPool2D': {4},
+            'GlobalMaxPool3D': {5},
+            'GRU': {3},
+            'LayerNormalization': {2, 3, 4, 5},
+            'LocallyConnected1D': {3},
+            'LocallyConnected2D': {4},
+            'LSTM': {3},
+            'MaxPool1D': {3},
+            'MaxPool2D': {4},
+            'MaxPool3D': {5},
+            'SeparableConv1D': {3},
+            'SeparableConv2D': {4},
+            'SimpleRNN': {3},
+            'SpatialDropout1D': {3},
+            'SpatialDropout2D': {4},
+            'SpatialDropout3D': {5}
+        }
+
+        # COMMENT
+        self.available_layers = dict()
+        self.available_layers_p = dict()
+
+        # COMMENT
+        for available_layer, available_layer_p in self.available_layers_raw.items():
+            for dim in layer_input_dim_assumptions[available_layer]:
+                if dim in self.available_layers:
+                    self.available_layers[dim][available_layer] = available_layer_p
+                else:
+                    self.available_layers[dim] = {available_layer: available_layer_p}
+
+        # COMMENT
+        for dim in self.available_layers.keys():
+            tmp = create_list_with_probabilities(self.available_layers[dim])
+            self.available_layers[dim], self.available_layers_p[dim] = tmp
 
     def _sanity_check_config(self):
         """"""

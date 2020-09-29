@@ -20,6 +20,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         # Register and process the supplied configuration
         self.config = config
         self._process_config()
+        self._process_available_layers()
         self._sanity_check_config()
 
         # Register variables of environment shapes to which the created genomes have to adhere to
@@ -45,7 +46,12 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def initialize_population(self):
         """"""
-        pass
+        # COMMENT
+        if self.pop.generation_counter is not None:
+            raise NotImplementedError("TODO")
+
+        print("EXIT")
+        exit()
 
     def evaluate_population(self, environment) -> (int, float):
         """"""
