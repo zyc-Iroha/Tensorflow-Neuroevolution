@@ -65,11 +65,11 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def get_best_genome(self) -> DeepNEATGenome:
         """"""
-        pass
+        return self.pop.best_genome
 
     def get_best_consistent_genome(self) -> DeepNEATGenome:
         """"""
-        pass
+        return self.pop.best_consistent_genome
 
     def get_eval_instance_count(self) -> int:
         """"""
