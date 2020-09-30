@@ -93,7 +93,17 @@ class DeepNEATGenome(BaseGenome):
 
     def __str__(self) -> str:
         """"""
-        raise NotImplementedError("TODO")
+        genome_graph_str = list()
+        for gene_id, gene in self.genome_graph.items():
+            if isinstance(gene, DeepNEATNode):
+                genome_graph_str.append((gene.node, gene.layer))
+            else:
+                genome_graph_str.append((gene.conn_start, gene.conn_end))
+
+        return "DeepNEAT Genome | ID: {:>6} | Fitness: {:>6} | Graph: {} | Optimizer: {}".format(self.genome_id,
+                                                                                                 self.fitness,
+                                                                                                 genome_graph_str,
+                                                                                                 self.optimizer)
 
     def reset_states(self) -> ():
         """"""

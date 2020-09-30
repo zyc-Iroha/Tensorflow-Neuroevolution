@@ -23,7 +23,10 @@ class DeepNEATPopulation(BasePopulation):
 
     def summarize_population(self):
         """"""
-        pass
+        print(f"\n\n#### Pop summary draft gen {self.generation_counter} ####")
+        for genome_id, genome in self.genomes.items():
+            print("ID: {}\t\tGENOME: {}".format(genome_id, genome))
+        print("#" * 80 + "\n\n")
 
     def serialize(self) -> dict:
         """"""

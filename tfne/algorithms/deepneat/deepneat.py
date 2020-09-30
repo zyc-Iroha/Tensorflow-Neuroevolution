@@ -148,11 +148,12 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def summarize_population(self):
         """"""
-        pass
+        self.pop.summarize_population()
 
     def evolve_population(self) -> bool:
         """"""
-        pass
+        print("EXIT")
+        exit()
 
     def save_state(self, save_dir_path):
         """"""
