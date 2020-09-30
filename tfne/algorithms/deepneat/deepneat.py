@@ -71,11 +71,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         # COMMENT
         for _ in range(self.pop_size):
 
-            # !FIXME not considering input layers and preprocessing layers but instead only using input shape dim
-            input_dim = len(self.input_shape) + 1
-            initial_layer = self.rng.choice(self.available_layers[input_dim], p=self.available_layers_p[input_dim])
-
-            genome_id, genome = self._create_initial_genome(initial_layer=initial_layer)
+            genome_id, genome = self._create_initial_genome()
 
             self.pop.genomes[genome_id] = genome
             self.pop.species[self.pop.species_counter].append(genome_id)
