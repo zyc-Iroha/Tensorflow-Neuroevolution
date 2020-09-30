@@ -11,11 +11,17 @@ from tfne.algorithms.base_algorithm import BaseNeuroevolutionAlgorithm
 from tfne.encodings.deepneat import DeepNEATGenome
 from ._deepneat_config_processing import DeepNEATConfigProcessing
 from ._deepneat_initialization import DeepNEATInitialization
+from ._deepneat_selection import DeepNEATSelection
+from ._deepneat_evolution import DeepNEATEvolution
+from ._deepneat_speciation import DeepNEATSpeciation
 
 
 class DeepNEAT(BaseNeuroevolutionAlgorithm,
                DeepNEATConfigProcessing,
-               DeepNEATInitialization):
+               DeepNEATInitialization,
+               DeepNEATSelection,
+               DeepNEATEvolution,
+               DeepNEATSpeciation):
     """"""
 
     def __init__(self, config, input_shape, output_shape, initial_state=None):
@@ -148,8 +154,35 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def evolve_population(self) -> bool:
         """"""
-        print("EXIT")
-        exit()
+
+        #### Select Genomes ####
+        if self.spec_type == 'basic':
+            spec_offspring, spec_parents = self._select_genomes_basic()
+        elif self.spec_type == 'fixed':
+            spec_offspring, spec_parents = self._select_genomes_fixed()
+        elif self.spec_type == 'dynamic':
+            spec_offspring, spec_parents = self._select_genomes_dynamic()
+        else:
+            raise RuntimeError(f"Speciation type '{self.spec_type}' not yet implemented")
+
+        if len(self.pop.genomes) == 0:
+            return True
+
+        #### Evolve Genomes ####
+        new_genome_ids, spec_parents = self._evolve_genomes(spec_offspring, spec_parents)
+
+        #### Speciate Genomes ####
+        if self.spec_type == 'basic':
+            pass
+        elif self.spec_type == 'fixed':
+            pass
+        elif self.spec_type == 'dynamic':
+            self._speciate_genomes_dynamic(new_genome_ids, spec_parents)
+
+        #### Return ####
+        # Adjust generation counter and return False, signalling that the population has not gone extinct
+        self.pop.generation_counter += 1
+        return False
 
     def save_state(self, save_dir_path):
         """"""
