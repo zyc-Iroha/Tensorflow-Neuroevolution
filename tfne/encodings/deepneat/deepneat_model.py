@@ -15,6 +15,12 @@ class DeepNEATModel(tf.keras.Model):
                  recurrent_init,
                  input_scaling,
                  merge_method,
-                 dtype):
+                 dtype,
+                 *args,
+                 **kwargs):
         """"""
-        pass
+        super().__init__(*args, **kwargs)
+        self.dummy_layer = tf.keras.layers.deserialize(output_layers[0])
+
+    def __call__(self, inputs, *args, **kwargs) -> tf.Tensor:
+        return self.dummy_layer(inputs)

@@ -1,9 +1,10 @@
+import statistics
 import tensorflow as tf
 from tfne.helper_functions import read_option_from_config, create_list_with_probabilities
 
 
 class DeepNEATConfigProcessing:
-    def _process_config(self):
+    def _read_config(self):
         """"""
         # COMMENT
         self.pop_size = read_option_from_config(self.config, 'GENERAL', 'pop_size')
@@ -35,7 +36,7 @@ class DeepNEATConfigProcessing:
         self.spec_type = read_option_from_config(self.config, 'SPECIATION', 'spec_type')
         if self.spec_type == 'dynamic':
             self.spec_species_count = read_option_from_config(self.config, 'SPECIATION', 'spec_species_count')
-            self.spec_species_fitness = read_option_from_config(self.config, 'SPECIATION', 'spec_species_fitness')
+            self.spec_fitness_func = read_option_from_config(self.config, 'SPECIATION', 'spec_fitness_func')
             self.spec_distance = read_option_from_config(self.config, 'SPECIATION', 'spec_distance')
             self.spec_distance_inc = read_option_from_config(self.config, 'SPECIATION', 'spec_distance_inc')
             self.spec_distance_calc = read_option_from_config(self.config, 'SPECIATION', 'spec_distance_calc')
@@ -61,7 +62,8 @@ class DeepNEATConfigProcessing:
         mutation_methods['crossover'] = read_option_from_config(self.config, 'EVOLUTION', 'crossover_prob')
         self.mutation_methods, self.mutation_methods_p = create_list_with_probabilities(mutation_methods)
 
-        # COMMENT
+        # TODO move the processing of the config params (filling in missing stddev) to _process_config(). Here, only
+        # read in config
         self.layer_params = dict()
         for available_layer in self.available_layers_raw.keys():
             config_section_str = 'LAYER_' + available_layer.upper()
@@ -109,7 +111,7 @@ class DeepNEATConfigProcessing:
 
             self.preprocessing_params[preprocessing_layer] = params
 
-    def _process_available_layers(self):
+    def _process_config(self):
         """"""
         # FIXME! PROTOTYPE ASSUMPTION: maximum layer input dimension of 4 (+1 batch_size)
         layer_input_dim_assumptions = {
@@ -154,11 +156,8 @@ class DeepNEATConfigProcessing:
             'SpatialDropout3D': {5}
         }
 
-        # COMMENT
         self.available_layers = dict()
         self.available_layers_p = dict()
-
-        # COMMENT
         for available_layer, available_layer_p in self.available_layers_raw.items():
             for dim in layer_input_dim_assumptions[available_layer]:
                 if dim in self.available_layers:
@@ -166,10 +165,19 @@ class DeepNEATConfigProcessing:
                 else:
                     self.available_layers[dim] = {available_layer: available_layer_p}
 
-        # COMMENT
         for dim in self.available_layers.keys():
             tmp = create_list_with_probabilities(self.available_layers[dim])
             self.available_layers[dim], self.available_layers_p[dim] = tmp
+
+        if self.spec_fitness_func == 'median':
+            self.spec_fitness_func = statistics.median
+        elif self.spec_fitness_func == 'mean':
+            self.spec_fitness_func = statistics.mean
+        else:
+            RuntimeError("COMMENT")
+
+        if self.consistency_evals is None or self.consistency_evals < 1:
+            self.consistency_evals = 1
 
     def _sanity_check_config(self):
         """"""

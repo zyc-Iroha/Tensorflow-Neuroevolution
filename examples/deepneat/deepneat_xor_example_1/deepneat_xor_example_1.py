@@ -13,7 +13,7 @@ def deepneat_xor_example_1(_):
     max_generations = 64
     max_fitness = 100
     max_time = timedelta(days=0, hours=3, minutes=0, seconds=0)
-    training_epochs = 10
+    training_epochs = 4
     final_epochs = 100
     batch_size = None
 

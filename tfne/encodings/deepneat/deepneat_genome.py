@@ -95,6 +95,10 @@ class DeepNEATGenome(BaseGenome):
         """"""
         raise NotImplementedError("TODO")
 
+    def reset_states(self) -> ():
+        """"""
+        pass
+
     def visualize(self, show=True, save_dir_path=None, **kwargs) -> str:
         """"""
         raise NotImplementedError("TODO")

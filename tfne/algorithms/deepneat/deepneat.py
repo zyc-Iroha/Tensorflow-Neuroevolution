@@ -22,8 +22,8 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         """"""
         # Register and process the supplied configuration
         self.config = config
+        self._read_config()
         self._process_config()
-        self._process_available_layers()
         self._sanity_check_config()
 
         # Register variables of environment shapes to which the created genomes have to adhere to
@@ -78,15 +78,73 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
             genome_id, genome = self._create_initial_genome(initial_layer=initial_layer)
 
             self.pop.genomes[genome_id] = genome
-            self.pop.species[self.pop.species_counter].append(genome)
+            self.pop.species[self.pop.species_counter].append(genome_id)
 
             if self.spec_type != 'basic' and self.pop.species_counter not in self.pop.species_repr:
                 self.pop.species_repr[self.pop.species_counter] = genome_id
 
     def evaluate_population(self, environment) -> (int, float):
         """"""
-        print("EXIT")
-        exit()
+        # Initialize population evaluation progress bar. Print notice of evaluation start
+        genome_eval_counter = 0
+        genome_eval_counter_div = round(self.pop_size / 40.0, 4)
+        print("\nEvaluating {} genomes in generation {}...".format(self.pop_size, self.pop.generation_counter))
+        print_str = "\r[{:40}] {}/{} Genomes".format("", genome_eval_counter, self.pop_size)
+        sys.stdout.write(print_str)
+        sys.stdout.flush()
+
+        for genome_id, genome in self.pop.genomes.items():
+
+            genome_fitness = environment.eval_genome_fitness(genome)
+
+            if self.pop.best_consistent_genome is None or genome_fitness > self.pop.best_consistent_fitness:
+                genome_fitness_list = [genome_fitness]
+                for _ in range(self.consistency_evals - 1):
+                    # tf.keras.backend.clear_session()
+                    genome.reset_states()
+                    genome_fitness_list.append(environment.eval_genome_fitness(genome))
+                genome_avg_fitness = round(statistics.mean(genome_fitness_list), 4)
+                genome.set_fitness(genome_avg_fitness)
+                if self.pop.best_consistent_genome is None or genome_avg_fitness > self.pop.best_consistent_fitness:
+                    self.pop.best_consistent_genome = genome
+                    self.pop.best_consistent_genome = genome_avg_fitness
+            else:
+                genome.set_fitness(genome_fitness)
+
+            # Register genome as new best if it exhibits better fitness than the previous best
+            if self.pop.best_fitness is None or genome_fitness > self.pop.best_fitness:
+                self.pop.best_genome = genome
+                self.pop.best_fitness = genome_fitness
+
+            # Print population evaluation progress bar
+            genome_eval_counter += 1
+            progress_mult = int(round(genome_eval_counter / genome_eval_counter_div, 4))
+            print_str = "\r[{:40}] {}/{} Genomes | Genome ID {} achieved fitness of {}".format(
+                "=" * progress_mult,
+                genome_eval_counter,
+                self.pop_size,
+                genome_id,
+                genome_fitness)
+            sys.stdout.write(print_str)
+            sys.stdout.flush()
+
+            # Add newline after status update when debugging
+            if logging.level_debug():
+                print("")
+
+            # Reset models, counters, layers, etc including in the GPU to avoid memory clutter from old models as
+            # most likely only limited gpu memory is available
+            tf.keras.backend.clear_session()
+
+        for spec_id, spec_genome_ids in self.pop.species.items():
+            spec_fitness_list = [self.pop.genomes[genome_id].get_fitness() for genome_id in spec_genome_ids]
+            spec_fitness = round(self.spec_fitness_func(spec_fitness_list), 4)
+            if spec_id in self.pop.species_fitness_history:
+                self.pop.species_fitness_history[spec_id][self.pop.generation_counter] = spec_fitness
+            else:
+                self.pop.species_fitness_history[spec_id] = {self.pop.generation_counter: spec_fitness}
+
+        return self.pop.generation_counter, self.pop.best_fitness
 
     def summarize_population(self):
         """"""
