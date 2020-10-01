@@ -14,6 +14,7 @@ from ._deepneat_initialization import DeepNEATInitialization
 from ._deepneat_selection import DeepNEATSelection
 from ._deepneat_evolution import DeepNEATEvolution
 from ._deepneat_speciation import DeepNEATSpeciation
+from ._deepneat_distance import DeepNEATDistance
 
 
 class DeepNEAT(BaseNeuroevolutionAlgorithm,
@@ -21,7 +22,8 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
                DeepNEATInitialization,
                DeepNEATSelection,
                DeepNEATEvolution,
-               DeepNEATSpeciation):
+               DeepNEATSpeciation,
+               DeepNEATDistance):
     """"""
 
     def __init__(self, config, input_shape, output_shape, initial_state=None):
@@ -164,6 +166,14 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
             spec_offspring, spec_parents = self._select_genomes_dynamic()
         else:
             raise RuntimeError(f"Speciation type '{self.spec_type}' not yet implemented")
+
+        print(spec_offspring)
+        print(spec_parents)
+        print(self.pop.species)
+        print(self.pop.genomes)
+        print(self.pop.species_repr)
+        print("EXIT")
+        exit()
 
         if len(self.pop.genomes) == 0:
             return True

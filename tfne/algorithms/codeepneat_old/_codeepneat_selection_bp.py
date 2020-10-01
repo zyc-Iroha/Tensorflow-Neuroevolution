@@ -43,7 +43,7 @@ class CoDeepNEATSelectionBP:
         # bp_spec_parents {int: [int]} associating species id with list of potential parent ids for species
         return bp_spec_offspring, bp_spec_parents
 
-    def _select_blueprints_gene_overlap_fixed(self) -> ({Union[int, str]: int}, {int: int}):
+    def _select_blueprints_gene_overlap_fixed(self) -> ({Union[int, str]: int}, {int: [int]}):
         """"""
         ### Species Extinction ###
         # Determine if species can be considered for extinction. Critera: Species existed long enough; species can be
@@ -183,7 +183,7 @@ class CoDeepNEATSelectionBP:
             total_avg_fitness -= spec_fitness
 
         # Return
-        # bp_spec_offspring {int: int} associating species id with amount of offspring
+        # bp_spec_offspring {Union[int, str]: int} associating species id with amount of offspring
         # bp_spec_parents {int: [int]} associating species id with list of potential parent ids for species
         return bp_spec_offspring, bp_spec_parents
 
