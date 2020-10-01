@@ -47,6 +47,7 @@ class XOREnvironment(BaseEnvironment):
 
         # Compile and train model
         model.compile(optimizer=optimizer, loss=self.loss_function)
+        '''
         model.fit(x=self.x, y=self.y, epochs=self.epochs, batch_size=self.batch_size, verbose=self.verbosity)
 
         # Evaluate and return its fitness
@@ -58,6 +59,9 @@ class XOREnvironment(BaseEnvironment):
             evaluated_fitness = 0
 
         return round(evaluated_fitness, 4)
+        '''
+        import random
+        return round(random.random() * 100, 4)
 
     def _eval_genome_fitness_non_weight_training(self, genome) -> float:
         """
