@@ -57,8 +57,6 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def initialize_population(self):
         """"""
-        print("EXIT")
-        exit()
         # COMMENT
         if self.pop.generation_counter is not None:
             raise NotImplementedError("TODO")
@@ -90,9 +88,9 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         """"""
         # Initialize population evaluation progress bar. Print notice of evaluation start
         genome_eval_counter = 0
-        genome_eval_counter_div = round(self.pop_size / 40.0, 4)
+        genome_eval_counter_div = round(self.pop_size / 80.0, 4)
         print("\nEvaluating {} genomes in generation {}...".format(self.pop_size, self.pop.generation_counter))
-        print_str = "\r[{:40}] {}/{} Genomes".format("", genome_eval_counter, self.pop_size)
+        print_str = "\r[{:80}] {}/{} Genomes".format("", genome_eval_counter, self.pop_size)
         sys.stdout.write(print_str)
         sys.stdout.flush()
 
@@ -122,7 +120,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
             # Print population evaluation progress bar
             genome_eval_counter += 1
             progress_mult = int(round(genome_eval_counter / genome_eval_counter_div, 4))
-            print_str = "\r[{:40}] {}/{} Genomes | Genome ID {} achieved fitness of {}".format(
+            print_str = "\r[{:80}] {}/{} Genomes | Genome ID {} achieved fitness of {}".format(
                 "=" * progress_mult,
                 genome_eval_counter,
                 self.pop_size,
@@ -155,7 +153,6 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def evolve_population(self) -> bool:
         """"""
-
         #### Select Genomes ####
         if self.spec_type == 'basic':
             spec_offspring, spec_parents = self._select_genomes_basic()
@@ -166,7 +163,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         else:
             raise RuntimeError(f"Speciation type '{self.spec_type}' not yet implemented")
 
-        if len(self.pop.genomes) == 0:
+        if len(self.pop.species) == 0:
             return True
 
         #### Evolve Genomes ####
