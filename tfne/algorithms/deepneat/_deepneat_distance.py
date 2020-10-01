@@ -10,6 +10,6 @@ class DeepNEATDistance:
 
         genome_id_pair = (genome_1.get_id(), genome_2.get_id())
         if genome_id_pair not in self.distance_memory:
-            self.distance_memory[genome_id_pair] = random.uniform(0.01, 0.5)
+            self.distance_memory[genome_id_pair] = round(random.uniform(0.01, 0.5), 4)
 
         return self.distance_memory[genome_id_pair]
