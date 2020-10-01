@@ -179,7 +179,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
             return True
 
         #### Evolve Genomes ####
-        new_genome_ids, spec_parents = self._evolve_genomes(spec_offspring, spec_parents)
+        new_genome_ids = self._evolve_genomes(spec_offspring, spec_parents)
 
         #### Speciate Genomes ####
         if self.spec_type == 'basic':

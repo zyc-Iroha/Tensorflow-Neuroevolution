@@ -1,5 +1,4 @@
 import random
-
 from tfne.encodings.deepneat import DeepNEATGenome
 from tfne.helper_functions import round_with_step
 
