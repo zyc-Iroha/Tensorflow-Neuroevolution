@@ -70,22 +70,24 @@ class DeepNEATSelection:
             spec_genome_ids_sorted = sorted(spec_genome_ids, key=lambda x: self.pop.genomes[x].get_fitness())
 
             # Determine the species elite as the top x members and the species representative
-            spec_elites = set(spec_genome_ids_sorted[-self.spec_genome_elitism:])
-            spec_elites.add(self.pop.species_repr[spec_id])
+            elites = set(spec_genome_ids_sorted[-self.spec_genome_elitism:])
+            elites.add(self.pop.species_repr[spec_id])
 
             # Determine the species parents as those clearing the reproduction threshold, plus the species elites
             reprod_threshold_index = math.ceil(len(spec_genome_ids) * self.spec_reprod_thres)
-            spec_parents = set(spec_genome_ids_sorted[reprod_threshold_index:])
-            spec_parents = spec_parents.union(spec_elites)
+            parents = set(spec_genome_ids_sorted[reprod_threshold_index:])
+            parents = parents.union(elites)
 
             # Remove non elite genome from the species list, as they are not part of the species anymore. Remove non
             # parental genomes from the genome container as there is no use for thsoe genomes anymore.
-            genome_ids_non_elite = set(spec_genome_ids) - spec_elites
-            genome_ids_non_parental = set(spec_genome_ids) - spec_parents
+            genome_ids_non_elite = set(spec_genome_ids) - elites
+            genome_ids_non_parental = set(spec_genome_ids) - parents
             for genome_id in genome_ids_non_elite:
                 self.pop.species[spec_id].remove(genome_id)
             for genome_id in genome_ids_non_parental:
                 del self.pop.genomes[genome_id]
+
+            spec_parents[spec_id] = tuple(parents)
 
         #### Offspring Size Calculation ####
         total_fitness = 0

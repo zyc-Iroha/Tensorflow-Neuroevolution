@@ -38,7 +38,7 @@ class DeepNEATConfigProcessing:
             self.spec_species_count = read_option_from_config(self.config, 'SPECIATION', 'spec_species_count')
             self.spec_fitness_func = read_option_from_config(self.config, 'SPECIATION', 'spec_fitness_func')
             self.spec_distance = read_option_from_config(self.config, 'SPECIATION', 'spec_distance')
-            self.spec_distance_inc = read_option_from_config(self.config, 'SPECIATION', 'spec_distance_inc')
+            self.spec_distance_dec = read_option_from_config(self.config, 'SPECIATION', 'spec_distance_dec')
             self.spec_distance_calc = read_option_from_config(self.config, 'SPECIATION', 'spec_distance_calc')
             self.spec_genome_elitism = read_option_from_config(self.config, 'SPECIATION', 'spec_genome_elitism')
             self.spec_min_offspring = read_option_from_config(self.config, 'SPECIATION', 'spec_min_offspring')

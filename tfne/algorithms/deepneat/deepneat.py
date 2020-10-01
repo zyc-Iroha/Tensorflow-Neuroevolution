@@ -167,14 +167,6 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         else:
             raise RuntimeError(f"Speciation type '{self.spec_type}' not yet implemented")
 
-        print(spec_offspring)
-        print(spec_parents)
-        print(self.pop.species)
-        print(self.pop.genomes)
-        print(self.pop.species_repr)
-        print("EXIT")
-        exit()
-
         if len(self.pop.genomes) == 0:
             return True
 
