@@ -1,7 +1,4 @@
-import os
 import sys
-import json
-import random
 import statistics
 import numpy as np
 import tensorflow as tf
@@ -60,6 +57,8 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
     def initialize_population(self):
         """"""
+        print("EXIT")
+        exit()
         # COMMENT
         if self.pop.generation_counter is not None:
             raise NotImplementedError("TODO")

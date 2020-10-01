@@ -1,5 +1,4 @@
 import statistics
-import tensorflow as tf
 from tfne.helper_functions import read_option_from_config, create_list_with_probabilities
 
 
@@ -72,10 +71,7 @@ class DeepNEATConfigProcessing:
 
             params = dict()
             for param in self.config.options(config_section_str):
-                tmp = read_option_from_config(self.config, config_section_str, param)
-                if isinstance(tmp, dict) and 'stddev' not in tmp:
-                    tmp['stddev'] = (tmp['max'] - tmp['min']) / 10
-                params[param] = tmp
+                params[param] = read_option_from_config(self.config, config_section_str, param)
 
             self.layer_params[available_layer] = params
 
@@ -88,10 +84,7 @@ class DeepNEATConfigProcessing:
 
             params = dict()
             for param in self.config.options(config_section_str):
-                tmp = read_option_from_config(self.config, config_section_str, param)
-                if isinstance(tmp, dict) and 'stddev' not in tmp:
-                    tmp['stddev'] = (tmp['max'] - tmp['min']) / 10
-                params[param] = tmp
+                params[param] = read_option_from_config(self.config, config_section_str, param)
 
             self.optimizer_params[available_optimizer] = params
 
@@ -104,10 +97,7 @@ class DeepNEATConfigProcessing:
 
             params = dict()
             for param in self.config.options(config_section_str):
-                tmp = read_option_from_config(self.config, config_section_str, param)
-                if isinstance(tmp, dict) and 'stddev' not in tmp:
-                    tmp['stddev'] = (tmp['max'] - tmp['min']) / 10
-                params[param] = tmp
+                params[param] = read_option_from_config(self.config, config_section_str, param)
 
             self.preprocessing_params[preprocessing_layer] = params
 
@@ -168,6 +158,24 @@ class DeepNEATConfigProcessing:
         for dim in self.available_layers.keys():
             tmp = create_list_with_probabilities(self.available_layers[dim])
             self.available_layers[dim], self.available_layers_p[dim] = tmp
+
+        for layer, layer_parameters in self.layer_params.items():
+            for layer_param, layer_param_val_range in layer_parameters.items():
+                if isinstance(layer_param_val_range, dict) and 'stddev' not in layer_param_val_range:
+                    stddev = (layer_param_val_range['max'] - layer_param_val_range['min']) / 10
+                    self.layer_params[layer][layer_param]['stddev'] = stddev
+
+        for optimizer, optimizer_parameters in self.optimizer_params.items():
+            for optimizer_param, optimizer_param_val_range in optimizer_parameters.items():
+                if isinstance(optimizer_param_val_range, dict) and 'stddev' not in optimizer_param_val_range:
+                    stddev = (optimizer_param_val_range['max'] - optimizer_param_val_range['min']) / 10
+                    self.optimizer_params[optimizer][optimizer_param]['stddev'] = stddev
+
+        for preprocessing, preprocessing_parameters in self.preprocessing_params.items():
+            for preprocessing_param, preprocessing_param_val_range in preprocessing_parameters.items():
+                if isinstance(preprocessing_param_val_range, dict) and 'stddev' not in preprocessing_param_val_range:
+                    stddev = (preprocessing_param_val_range['max'] - preprocessing_param_val_range['min']) / 10
+                    self.preprocessing_params[preprocessing][preprocessing_param]['stddev'] = stddev
 
         if self.spec_fitness_func == 'median':
             self.spec_fitness_func = statistics.median
