@@ -15,7 +15,7 @@ class DeepNEATSelection:
         """"""
         #### Species Extinction ####
         extinct_fitness = 0
-        spec_extinct = set()
+        extinct_species = set()
         species_ordered = sorted(self.pop.species.keys(),
                                  key=lambda x: self.pop.species_fitness_history[x][self.pop.generation_counter])
         for spec_id in species_ordered:
@@ -34,7 +34,7 @@ class DeepNEATSelection:
             if distant_fitness >= max(recent_fitness):
                 # Species is stagnating. Flag species as extinct, keep track of its fitness and then remove it from the
                 # population
-                spec_extinct.add(spec_id)
+                extinct_species.add(spec_id)
                 extinct_fitness += self.pop.species_fitness_history[spec_id][self.pop.generation_counter]
                 for genome_id in self.pop.species[spec_id]:
                     del self.pop.genomes[genome_id]
@@ -78,7 +78,7 @@ class DeepNEATSelection:
             parents = set(spec_genome_ids_sorted[reprod_threshold_index:])
             parents = parents.union(elites)
 
-            # Remove non elite genome from the species list, as they are not part of the species anymore. Remove non
+            # Remove non elite genomes from the species list, as they are not part of the species anymore. Remove non
             # parental genomes from the genome container as there is no use for thsoe genomes anymore.
             genome_ids_non_elite = set(spec_genome_ids) - elites
             genome_ids_non_parental = set(spec_genome_ids) - parents
@@ -87,13 +87,14 @@ class DeepNEATSelection:
             for genome_id in genome_ids_non_parental:
                 del self.pop.genomes[genome_id]
 
+            # Assign determined parents to each species and cast to iterable, as randomly drawn from them
             spec_parents[spec_id] = tuple(parents)
 
         #### Offspring Size Calculation ####
         total_fitness = 0
         for fitness_history in self.pop.species_fitness_history.values():
             total_fitness += fitness_history[self.pop.generation_counter]
-        for spec_id in spec_extinct:
+        for spec_id in extinct_species:
             species_ordered.remove(spec_id)
 
         # Determine the amount of offspring to be reinitialized as the fitness share of the total fitness by the extinct
