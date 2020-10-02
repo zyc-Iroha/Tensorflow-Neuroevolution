@@ -15,21 +15,20 @@ class DeepNEATSpeciation:
         #### Species Assignment ####
         min_spec_size = self.spec_genome_elitism + self.spec_min_offspring + 1
         for genome_id in new_genome_ids:
-            spec_distances = dict()
+            distance_to_specs = dict()
+            new_genome = self.pop.genomes[genome_id]
             for spec_id, spec_repr_id in self.pop.species_repr.items():
-                spec_repr_genome = self.pop.genomes[spec_repr_id]
-                spec_distances[spec_id] = self._calculate_genome_distance(spec_repr_genome, self.pop.genomes[genome_id])
+                distance_to_specs[spec_id] = self._calculate_genome_distance(new_genome, self.pop.genomes[spec_repr_id])
 
-            min_distance_spec = min(spec_distances, key=spec_distances.get)
-            if spec_distances[min_distance_spec] <= self.spec_distance:
-                self.pop.species[min_distance_spec].append(genome_id)
-            elif spec_distances[min_distance_spec] > self.spec_distance \
-                    and min_spec_size * len(self.pop.species) >= self.pop_size:
+            species_min_distance = min(distance_to_specs, key=distance_to_specs.get)
+            if distance_to_specs[species_min_distance] <= self.spec_distance:
+                self.pop.species[species_min_distance].append(genome_id)
+            elif min_spec_size * len(self.pop.species) >= self.pop_size:
                 warnings.warn(f"Warning: New Genome (#{genome_id}) has sufficient distance to other species "
                               f"representatives in order to form a new species, but it has been assigned to species "
-                              f"{min_distance_spec} as the population size does not allow for more species.",
+                              f"{species_min_distance} as the population size does not allow for more species.",
                               UserWarning)
-                self.pop.species[min_distance_spec].append(genome_id)
+                self.pop.species[species_min_distance].append(genome_id)
             else:
                 # Create a new species with the new genome as the representative
                 self.pop.species_counter += 1
