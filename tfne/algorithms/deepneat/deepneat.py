@@ -3,6 +3,7 @@ import statistics
 import numpy as np
 import tensorflow as tf
 import tfne
+from copy import deepcopy
 from absl import logging
 from tfne.algorithms.base_algorithm import BaseNeuroevolutionAlgorithm
 from tfne.encodings.deepneat import DeepNEATGenome
@@ -98,24 +99,25 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
 
             genome_fitness = environment.eval_genome_fitness(genome)
 
-            if self.pop.best_consistent_genome is None or genome_fitness > self.pop.best_consistent_fitness:
+            if genome_fitness > self.pop.best_consistent_fitness:
                 genome_fitness_list = [genome_fitness]
                 for _ in range(self.consistency_evals - 1):
                     # tf.keras.backend.clear_session()
                     genome.reset_states()
                     genome_fitness_list.append(environment.eval_genome_fitness(genome))
+
                 genome_avg_fitness = round(statistics.mean(genome_fitness_list), 4)
                 genome.set_fitness(genome_avg_fitness)
-                if self.pop.best_consistent_genome is None or genome_avg_fitness > self.pop.best_consistent_fitness:
-                    self.pop.best_consistent_genome = genome
-                    self.pop.best_consistent_genome = genome_avg_fitness
+                if genome_avg_fitness > self.pop.best_consistent_fitness:
+                    self.pop.best_consistent_genome = deepcopy(genome)
+                    self.pop.best_consistent_fitness = genome_avg_fitness
+
+                genome_max_fitness = max(genome_fitness_list)
+                if genome_max_fitness > self.pop.best_fitness:
+                    self.pop.best_genome = deepcopy(genome)
+                    self.pop.best_fitness = genome_max_fitness
             else:
                 genome.set_fitness(genome_fitness)
-
-            # Register genome as new best if it exhibits better fitness than the previous best
-            if self.pop.best_fitness is None or genome_fitness > self.pop.best_fitness:
-                self.pop.best_genome = genome
-                self.pop.best_fitness = genome_fitness
 
             # Print population evaluation progress bar
             genome_eval_counter += 1

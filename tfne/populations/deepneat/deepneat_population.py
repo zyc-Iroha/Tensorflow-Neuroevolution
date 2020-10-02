@@ -11,8 +11,8 @@ class DeepNEATPopulation(BasePopulation):
         self.generation_counter = None
         self.best_genome = None
         self.best_fitness = None
-        self.best_consistent_genome = None
-        self.best_consistent_fitness = None
+        self.best_consistent_genome = float('-inf')
+        self.best_consistent_fitness = float('-inf')
 
         # Declare and initialize internal variables concerning the genome population of the CoDeepNEAT algorithm
         self.genomes = dict()
