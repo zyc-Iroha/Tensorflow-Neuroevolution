@@ -6,30 +6,10 @@ import subprocess
 import tensorflow as tf
 from typing import Union
 from tfne.encodings.base_genome import BaseGenome
+from .deepneat_genes import DeepNEATNode, DeepNEATConn
 from .deepneat_model import DeepNEATModel
 
 
-class DeepNEATNode:
-    """"""
-
-    def __init__(self, gene_id, node, layer):
-        self.gene_id = gene_id
-        self.node = node
-        self.layer = layer
-
-
-class DeepNEATConn:
-    """"""
-
-    def __init__(self, gene_id, conn_start, conn_end, enabled=True):
-        self.gene_id = gene_id
-        self.conn_start = conn_start
-        self.conn_end = conn_end
-        self.enabled = enabled
-
-    def set_enabled(self, enabled):
-        """"""
-        self.enabled = enabled
 
 
 class DeepNEATGenome(BaseGenome):

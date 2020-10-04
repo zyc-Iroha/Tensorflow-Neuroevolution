@@ -90,7 +90,7 @@ class DeepNEAT(BaseNeuroevolutionAlgorithm,
         # Initialize population evaluation progress bar. Print notice of evaluation start
         genome_eval_counter = 0
         genome_eval_counter_div = round(self.pop_size / 80.0, 4)
-        print("\nEvaluating {} genomes in generation {}...".format(self.pop_size, self.pop.generation_counter))
+        print("\nEvaluating {} genomes in generation {}...".format(len(self.pop.genomes), self.pop.generation_counter))
         print_str = "\r[{:80}] {}/{} Genomes".format("", genome_eval_counter, self.pop_size)
         sys.stdout.write(print_str)
         sys.stdout.flush()
