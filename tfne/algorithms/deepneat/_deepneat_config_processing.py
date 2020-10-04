@@ -177,6 +177,12 @@ class DeepNEATConfigProcessing:
                     stddev = (preprocessing_param_val_range['max'] - preprocessing_param_val_range['min']) / 10
                     self.preprocessing_params[preprocessing][preprocessing_param]['stddev'] = stddev
 
+        for layer in self.input_layers:
+            layer['config']['dtype'] = self.dtype
+
+        for layer in self.output_layers:
+            layer['config']['dtype'] = self.dtype
+
         if self.spec_fitness_func == 'median':
             self.spec_fitness_func = statistics.median
         elif self.spec_fitness_func == 'mean':

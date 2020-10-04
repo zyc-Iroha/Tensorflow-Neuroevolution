@@ -77,7 +77,6 @@ class DeepNEATGenome(BaseGenome):
         # Create model with genotype
         self.model = DeepNEATModel(genome_graph,
                                    preprocessing_layers,
-                                   optimizer,
                                    input_shape,
                                    input_layers,
                                    output_layers,

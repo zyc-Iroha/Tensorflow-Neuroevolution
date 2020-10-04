@@ -7,7 +7,6 @@ class DeepNEATModel(tf.keras.Model):
     def __init__(self,
                  genome_graph,
                  preprocessing_layers,
-                 optimizer,
                  input_shape,
                  input_layers,
                  output_layers,
@@ -19,8 +18,16 @@ class DeepNEATModel(tf.keras.Model):
                  *args,
                  **kwargs):
         """"""
-        super().__init__(*args, **kwargs)
-        self.dummy_layer = tf.keras.layers.deserialize(output_layers[0])
+        super().__init__(dtype=dtype, *args, **kwargs)
+        # !FIXME disregard preprocessing layers for first prototype
+        # !FIXME disregard input layers for first prototype
+
+        self.output_layers = [tf.keras.layers.deserialize(layer) for layer in output_layers]
 
     def __call__(self, inputs, *args, **kwargs) -> tf.Tensor:
+        x = tf.cast(x=inputs, dtype=self.dtype)
+
+        for layer in self.output_layers:
+            x = layer(x)
+
         return self.dummy_layer(inputs)
