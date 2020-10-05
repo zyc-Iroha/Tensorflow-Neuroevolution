@@ -53,7 +53,7 @@ for conn in random_conns:
 #dot.render(filename='tempgraph.svg', view=True, cleanup=True, format='svg')
 
 
-node_dependencies = {2: {0, 3, 4, 5, 7}, 1: {0, 2, 3, 6}, 7: {0}, 5: {2, 3, 4}, 3: {0, 2, 4, 5}, 4: {0, 2, 5}, 6: {2}}
+#node_dependencies = {2: {0, 3, 4, 5, 7}, 1: {0, 2, 3, 6}, 7: {0}, 5: {2, 3, 4}, 3: {0, 2, 4, 5}, 4: {0, 2, 5}, 6: {2}}
 
 print(node_dependencies)
 
@@ -79,6 +79,8 @@ while True:
             min_deps_count = sys.maxsize
 
             for node, node_deps_set in node_deps.items():
+                if node == 1:
+                    continue
                 if len(node_deps_set) < min_deps_count:
                     min_deps_count = len(node_deps_set)
                     node_deps_min = {node: node_deps_set}
