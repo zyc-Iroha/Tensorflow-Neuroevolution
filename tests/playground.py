@@ -39,7 +39,6 @@ for conn in random_conns:
     else:
         node_dependencies[conn[1]] = {conn[0]}
 
-print(node_dependencies)
 ########
 
 from graphviz import Digraph
@@ -53,6 +52,11 @@ for conn in random_conns:
 # Render created dot graph, optionally showing it
 #dot.render(filename='tempgraph.svg', view=True, cleanup=True, format='svg')
 
+
+node_dependencies = {2: {0, 3, 4, 5, 7}, 1: {0, 2, 3, 6}, 7: {0}, 5: {2, 3, 4}, 3: {0, 2, 4, 5}, 4: {0, 2, 5}, 6: {2}}
+
+print(node_dependencies)
+
 node_deps = node_dependencies.copy()
 node_deps[0] = set()
 
@@ -60,6 +64,8 @@ recurrent_conns = list()
 graph_topology = list()
 
 while True:
+    print(f"node_deps: {node_deps}\n")
+
     # find all nodes in graph having no dependencies in current iteration
     dependencyless = set()
     for node, dep in node_deps.items():
@@ -116,7 +122,7 @@ while True:
             print(f"node_deps: {node_deps}")
             print(f"recurrent_conns: {recurrent_conns}")
 
-            print("\n\n")
+            print("")
             continue
 
         break
