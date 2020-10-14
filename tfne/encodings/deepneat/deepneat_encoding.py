@@ -1,5 +1,5 @@
 from tfne.encodings.base_encoding import BaseEncoding
-from .deepneat_genome import DeepNEATGenome, DeepNEATNode, DeepNEATConn
+from .deepneat_genome import DeepNEATGenome
 
 
 class DeepNEATEncoding(BaseEncoding):
@@ -44,7 +44,7 @@ class DeepNEATEncoding(BaseEncoding):
         if initial_state is not None:
             raise NotImplementedError("TODO")
 
-    def create_node_gene(self, node, layer) -> (int, DeepNEATNode):
+    def create_node_gene(self, node, layer) -> (int, (int, str)):
         """"""
         gene_key = (node,)
         if gene_key not in self.gene_to_gene_id:
@@ -52,9 +52,9 @@ class DeepNEATEncoding(BaseEncoding):
             self.gene_to_gene_id[gene_key] = self.gene_id_counter
 
         gene_id = self.gene_to_gene_id[gene_key]
-        return gene_id, DeepNEATNode(gene_id, node, layer)
+        return gene_id, (node, layer)
 
-    def create_conn_gene(self, conn_start, conn_end) -> (int, DeepNEATConn):
+    def create_conn_gene(self, conn_start, conn_end) -> (int, (int, int)):
         """"""
         gene_key = (conn_start, conn_end)
         if gene_key not in self.gene_to_gene_id:
@@ -62,7 +62,7 @@ class DeepNEATEncoding(BaseEncoding):
             self.gene_to_gene_id[gene_key] = self.gene_id_counter
 
         gene_id = self.gene_to_gene_id[gene_key]
-        return gene_id, DeepNEATConn(gene_id, conn_start, conn_end)
+        return gene_id, (conn_start, conn_end)
 
     def get_node_for_split(self, conn_start, conn_end) -> int:
         """"""
@@ -76,7 +76,9 @@ class DeepNEATEncoding(BaseEncoding):
     def create_genome(self,
                       parent_mutation,
                       generation,
-                      genome_graph,
+                      genome_nodes,
+                      genome_conns_enabled,
+                      genome_conns_disabled,
                       preprocessing_layers,
                       optimizer) -> (int, DeepNEATGenome):
         """"""
@@ -85,7 +87,9 @@ class DeepNEATEncoding(BaseEncoding):
         return self.genome_id_counter, DeepNEATGenome(genome_id=self.genome_id_counter,
                                                       parent_mutation=parent_mutation,
                                                       generation=generation,
-                                                      genome_graph=genome_graph,
+                                                      genome_nodes=genome_nodes,
+                                                      genome_conns_enabled=genome_conns_enabled,
+                                                      genome_conns_disabled=genome_conns_disabled,
                                                       preprocessing_layers=preprocessing_layers,
                                                       optimizer=optimizer,
                                                       input_shape=self.input_shape,

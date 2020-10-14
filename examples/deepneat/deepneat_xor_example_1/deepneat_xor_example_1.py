@@ -8,7 +8,7 @@ def deepneat_xor_example_1(_):
     # Set configuration specific to TFNE and the example, but not to the neuroevolutionary process. The details of the
     # neuroevolutionary process are listed in the config file.
     logging_level = logging.INFO
-    config_file_path = './deepneat_xor_example_1_config.cfg'
+    config_file_path = './deepneat_xor_example_1.cfg'
     backup_dir_path = './tfne_state_backups/'
     max_generations = 64
     max_fitness = 100

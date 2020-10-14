@@ -65,69 +65,90 @@ class DeepNEATEvolution:
     def _mutation_add_conn(self, parent_genome) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
     def _mutation_add_node(self, parent_genome) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
     def _mutation_rem_conn(self, parent_genome) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
     def _mutation_rem_node(self, parent_genome) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
     def _mutation_node_layer(self, parent_genome) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
     def _mutation_hyperparam(self, parent_genome) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
     def _crossover(self, parent_genome_1, parent_genome_2) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
-        parent_genome_graph, parent_preprocessing_layers, parent_optimizer = parent_genome_1.get_genotype()
+        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
+            parent_optimizer = parent_genome_1.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=parent_genome_graph,
+                                      genome_nodes=parent_genome_nodes,
+                                      genome_conns_enabled=parent_genome_conns_enabled,
+                                      genome_conns_disabled=parent_genome_conns_disabled,
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)

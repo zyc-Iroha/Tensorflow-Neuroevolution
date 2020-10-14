@@ -4,12 +4,8 @@ import tempfile
 import platform
 import subprocess
 import tensorflow as tf
-from typing import Union
 from tfne.encodings.base_genome import BaseGenome
-from .deepneat_genes import DeepNEATNode, DeepNEATConn
 from .deepneat_model import DeepNEATModel
-
-
 
 
 class DeepNEATGenome(BaseGenome):
@@ -19,7 +15,9 @@ class DeepNEATGenome(BaseGenome):
                  genome_id,
                  parent_mutation,
                  generation,
-                 genome_graph,
+                 genome_nodes,
+                 genome_conns_enabled,
+                 genome_conns_disabled,
                  preprocessing_layers,
                  optimizer,
                  input_shape,
@@ -37,7 +35,9 @@ class DeepNEATGenome(BaseGenome):
         self.generation = generation
 
         # Register genotype
-        self.genome_graph = genome_graph
+        self.genome_nodes = genome_nodes
+        self.genome_conns_enabled = genome_conns_enabled
+        self.genome_conns_disabled = genome_conns_disabled
         self.preprocessing_layers = preprocessing_layers
         self.optimizer = optimizer
 
@@ -54,8 +54,13 @@ class DeepNEATGenome(BaseGenome):
         # Initialize internal variables
         self.fitness = None
 
+        # Preprocess genotype information as required by DeepNEATModel and useful for evolutionary operations on this
+        # genome
+        self.XXXXXXXXX = None
+        self._preprocess_genotype()
+
         # Create model with genotype
-        self.model = DeepNEATModel(genome_graph,
+        self.model = DeepNEATModel(None,
                                    preprocessing_layers,
                                    input_shape,
                                    input_layers,
@@ -72,17 +77,16 @@ class DeepNEATGenome(BaseGenome):
 
     def __str__(self) -> str:
         """"""
-        genome_graph_str = list()
-        for gene_id, gene in self.genome_graph.items():
-            if isinstance(gene, DeepNEATNode):
-                genome_graph_str.append((gene.node, gene.layer))
-            else:
-                genome_graph_str.append((gene.conn_start, gene.conn_end))
+        return "DeepNEAT Genome | ID: {:>6} | Fitness: {:>6} | Nodes: {} | Conns: {} | Optimizer: {}".format(
+            self.genome_id,
+            self.fitness,
+            self.genome_nodes.values(),
+            self.genome_conns_enabled.values(),
+            self.optimizer)
 
-        return "DeepNEAT Genome | ID: {:>6} | Fitness: {:>6} | Graph: {} | Optimizer: {}".format(self.genome_id,
-                                                                                                 self.fitness,
-                                                                                                 genome_graph_str,
-                                                                                                 self.optimizer)
+    def _preprocess_genotype(self):
+        """"""
+        pass
 
     def reset_states(self) -> ():
         """"""
@@ -107,9 +111,13 @@ class DeepNEATGenome(BaseGenome):
     def set_fitness(self, fitness):
         self.fitness = fitness
 
-    def get_genotype(self) -> ({int: Union[DeepNEATNode, DeepNEATConn]}, [dict], dict):
+    def get_genotype(self) -> ({int: (int, str)}, {int: (int, int)}, {int: (int, int)}, [dict], dict):
         """"""
-        return self.genome_graph, self.preprocessing_layers, self.optimizer
+        return self.genome_nodes, \
+               self.genome_conns_enabled, \
+               self.genome_conns_disabled, \
+               self.preprocessing_layers, \
+               self.optimizer
 
     def get_model(self) -> tf.keras.Model:
         """"""

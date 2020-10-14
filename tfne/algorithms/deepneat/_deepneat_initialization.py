@@ -45,13 +45,17 @@ class DeepNEATInitialization:
 
         initial_layer = {'class_name': chosen_layer, 'config': layer_config}
 
-        genome_graph = dict()
+        genome_nodes = dict()
         gene_id, gene = self.enc.create_node_gene(node=1, layer=None)
-        genome_graph[gene_id] = gene
+        genome_nodes[gene_id] = gene
         gene_id, gene = self.enc.create_node_gene(node=2, layer=initial_layer)
-        genome_graph[gene_id] = gene
+        genome_nodes[gene_id] = gene
+
+        genome_conns_enabled = dict()
         gene_id, gene = self.enc.create_conn_gene(conn_start=1, conn_end=2)
-        genome_graph[gene_id] = gene
+        genome_conns_enabled[gene_id] = gene
+
+        genome_conns_disabled = dict()
 
         # !FIXME No preprocessing layers for this prototype
         preprocessing_layers = []
@@ -93,6 +97,8 @@ class DeepNEATInitialization:
 
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_graph=genome_graph,
+                                      genome_nodes=genome_nodes,
+                                      genome_conns_enabled=genome_conns_enabled,
+                                      genome_conns_disabled=genome_conns_disabled,
                                       preprocessing_layers=preprocessing_layers,
                                       optimizer=optimizer)

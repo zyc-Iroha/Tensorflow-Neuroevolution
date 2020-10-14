@@ -50,7 +50,7 @@ class DeepNEATConfigProcessing:
             raise NotImplementedError("TODO")
 
         # COMMENT
-        self.max_mutation = read_option_from_config(self.config, 'EVOLUTION', 'max_mutation')
+        self.mutation_degree = read_option_from_config(self.config, 'EVOLUTION', 'mutation_degree')
         mutation_methods = dict()
         mutation_methods['add_conn'] = read_option_from_config(self.config, 'EVOLUTION', 'mutation_add_conn_prob')
         mutation_methods['add_node'] = read_option_from_config(self.config, 'EVOLUTION', 'mutation_add_node_prob')

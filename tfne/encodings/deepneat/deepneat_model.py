@@ -1,6 +1,5 @@
 import sys
 import tensorflow as tf
-from .deepneat_genes import DeepNEATNode, DeepNEATConn
 
 
 class DeepNEATModel(tf.keras.Model):
@@ -26,16 +25,6 @@ class DeepNEATModel(tf.keras.Model):
 
         node_dependencies = dict()
         node_configs = dict()
-
-        for gene in genome_graph.values():
-            if isinstance(gene, DeepNEATNode):
-                node_configs[gene.node] = gene.layer
-            elif gene.enabled:
-                if gene.conn_end in node_dependencies:
-                    node_dependencies[gene.conn_end].add(gene.conn_start)
-                else:
-                    node_dependencies[gene.conn_end] = {gene.conn_start}
-        del node_configs[1]
 
         # INSERT RECURRENCY GRAPH DETECTION
 
