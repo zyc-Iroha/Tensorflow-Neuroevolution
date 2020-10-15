@@ -1,7 +1,10 @@
 import sys
 import random
 import tempfile
+import itertools
 from graphviz import Digraph
+
+########################################################################################################################
 
 random_nodes = [0, 1]
 random_conns = {(0, 1)}
@@ -28,6 +31,25 @@ for conn in random_conns:
         node_dependencies[conn[1]] = {conn[0]}
 
 print(node_dependencies)
+
+########################################################################################################################
+
+r_nodes = random_nodes.copy()
+r_nodes.remove(0)
+r_nodes.remove(1)
+r_nodes_iter = itertools.permutations(r_nodes)
+
+for permutation in r_nodes_iter:
+    ordering = list(permutation)
+    ordering.append(1)
+    ordering.insert(0, 0)
+    print(ordering)
+
+
+
+    break
+
+exit()
 
 ########################################################################################################################
 
