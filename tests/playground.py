@@ -1,36 +1,34 @@
 import sys
 import random
+import tempfile
+from graphviz import Digraph
 
-random_nodes = [0, 1, 2]
+random_nodes = [0, 1]
 random_conns = {(0, 1)}
-valid_node_coll = {0: [True, True], 1: [True, True], 2: [False, False]}
+valid_node_coll = {0: [True, True], 1: [True, True]}
 while len(random_conns) < 20:
-    r_conn_start, r_conn_end = random.sample(random_nodes, k=2)
+    conn_start, conn_end = random.sample(random_nodes, k=2)
 
-    if r_conn_start == 1 or r_conn_end == 0:
+    if conn_start == 1 or conn_end == 0:
         continue
 
-    if (r_conn_start, r_conn_end) not in random_conns:
-        random_conns.add((r_conn_start, r_conn_end))
+    if (conn_start, conn_end) not in random_conns:
+        random_conns.add((conn_start, conn_end))
 
-        if not valid_node_coll[r_conn_start][0]:
-            valid_node_coll[r_conn_start][0] = True
+        if not valid_node_coll[conn_start][0]:
+            valid_node_coll[conn_start][0] = True
 
-        if not valid_node_coll[r_conn_end][1]:
-            valid_node_coll[r_conn_end][1] = True
+        if not valid_node_coll[conn_end][1]:
+            valid_node_coll[conn_end][1] = True
 
-        if all([valid[0] == valid[1] for valid in valid_node_coll.values()]):
-            r_conn_start, r_conn_end = random.sample(random_nodes, k=2)
-            while r_conn_start == 1 or r_conn_end == 0:
-                r_conn_start, r_conn_end = random.sample(random_nodes, k=2)
+    if all([valid[0] == valid[1] for valid in valid_node_coll.values()]):
+        new_node = max(random_nodes) + 1
+        random_nodes.append(new_node)
 
-            new_node = max(random_nodes) + 1
-            random_nodes.append(new_node)
+        random_conns.add((conn_start, new_node))
+        random_conns.add((new_node, conn_end))
 
-            random_conns.add((r_conn_start, new_node))
-            random_conns.add((new_node, r_conn_end))
-
-            valid_node_coll[new_node] = [False, False]
+        valid_node_coll[new_node] = [False, False]
 
 node_dependencies = dict()
 for conn in random_conns:
@@ -39,9 +37,10 @@ for conn in random_conns:
     else:
         node_dependencies[conn[1]] = {conn[0]}
 
-########
+print(node_dependencies)
 
-from graphviz import Digraph
+########################################################################################################################
+
 # Create Digraph, setting name and graph orientaion
 dot = Digraph(name='tempgraph', graph_attr={'rankdir': 'TB'})
 
@@ -50,12 +49,17 @@ for conn in random_conns:
     dot.edge(str(conn[0]), str(conn[1]))
 
 # Render created dot graph, optionally showing it
-#dot.render(filename='tempgraph.svg', view=True, cleanup=True, format='svg')
+dot.render(filename='tempgraph.svg', directory=tempfile.gettempdir(), view=True, cleanup=True, format='svg')
 
+########################################################################################################################
 
-#node_dependencies = {2: {0, 3, 4, 5, 7}, 1: {0, 2, 3, 6}, 7: {0}, 5: {2, 3, 4}, 3: {0, 2, 4, 5}, 4: {0, 2, 5}, 6: {2}}
+# Interesting special edge case conns
+# node_dependencies = {2: {0, 3, 4, 5, 7}, 1: {0, 2, 3, 6}, 7: {0}, 5: {2, 3, 4}, 3: {0, 2, 4, 5}, 4: {0, 2, 5}, 6: {2}}
+# node_dependencies = {3: {0, 2, 4, 6, 7}, 7: {4}, 2: {0, 3, 4, 5}, 1: {0, 2, 3, 5}, 4: {0, 2, 3}, 5: {0, 3}, 6: {4}}
+# node_dependencies = {3: {0, 7}, 8: {2}, 1: {0, 2, 3, 4, 10}, 2: {0, 6}, 10: {9, 11}, 11: {9}, 4: {0, 5}, 6: {8, 9, 0}, 9: {3}, 5: {3}, 7: {5}}
+# node_dependencies = {3: {0, 2, 4, 5, 6, 7}, 2: {0, 3, 4}, 1: {0, 2, 3}, 7: {2, 6}, 4: {0, 2, 3}, 5: {4}, 6: {0, 4}}
 
-print(node_dependencies)
+exit()
 
 node_deps = node_dependencies.copy()
 node_deps[0] = set()
@@ -129,7 +133,6 @@ while True:
 
         break
 
-
         '''
         if node_deps:
             min_deps_nodes = None
@@ -175,7 +178,6 @@ while True:
         del node_deps[node]
     for node, dep in node_deps.items():
         node_deps[node] = dep - dependencyless
-
 
 print("RESULTS:")
 print(graph_topology)
