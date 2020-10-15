@@ -5,30 +5,20 @@ from graphviz import Digraph
 
 random_nodes = [0, 1]
 random_conns = {(0, 1)}
-valid_node_coll = {0: [True, True], 1: [True, True]}
 while len(random_conns) < 20:
-    conn_start, conn_end = random.sample(random_nodes, k=2)
 
+    conn_start, conn_end = random.sample(random_nodes, k=2)
     if conn_start == 1 or conn_end == 0:
         continue
 
     if (conn_start, conn_end) not in random_conns:
         random_conns.add((conn_start, conn_end))
-
-        if not valid_node_coll[conn_start][0]:
-            valid_node_coll[conn_start][0] = True
-
-        if not valid_node_coll[conn_end][1]:
-            valid_node_coll[conn_end][1] = True
-
-    if all([valid[0] == valid[1] for valid in valid_node_coll.values()]):
+    else:
         new_node = max(random_nodes) + 1
         random_nodes.append(new_node)
 
         random_conns.add((conn_start, new_node))
         random_conns.add((new_node, conn_end))
-
-        valid_node_coll[new_node] = [False, False]
 
 node_dependencies = dict()
 for conn in random_conns:
@@ -49,7 +39,7 @@ for conn in random_conns:
     dot.edge(str(conn[0]), str(conn[1]))
 
 # Render created dot graph, optionally showing it
-dot.render(filename='tempgraph.svg', directory=tempfile.gettempdir(), view=True, cleanup=True, format='svg')
+dot.render(filename='tempgraph', directory=tempfile.gettempdir(), view=True, cleanup=True, format='svg')
 
 ########################################################################################################################
 
