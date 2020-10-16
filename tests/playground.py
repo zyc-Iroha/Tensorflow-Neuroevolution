@@ -4,27 +4,6 @@ import tempfile
 import itertools
 from graphviz import Digraph
 
-
-
-def split_list(data, n):
-    for splits in itertools.combinations(range(1, len(data)), n-1):
-        result = []
-        prev = None
-        for split in itertools.chain(splits, [None]):
-            result.append(data[prev:split])
-            prev = split
-        yield result
-
-print(list(split_list(list(range(8)), 4)))
-
-exit()
-
-
-
-
-
-
-
 ########################################################################################################################
 
 random_nodes = [0, 1]
@@ -53,7 +32,20 @@ for conn in random_conns:
 
 print(node_dependencies)
 
+
 ########################################################################################################################
+
+def create_groupings(inputs):
+    list_len = len(inputs)
+    for n in range(1, list_len + 1):
+        for split_indices in itertools.combinations(range(1, list_len), n - 1):
+            grouping = []
+            prev_split_index = None
+            for split_index in itertools.chain(split_indices, [None]):
+                grouping.append(set(inputs[prev_split_index:split_index]))
+                prev_split_index = split_index
+            yield grouping
+
 
 r_nodes = random_nodes.copy()
 r_nodes.remove(0)
@@ -63,10 +55,10 @@ r_nodes_iter = itertools.permutations(r_nodes)
 for permutation in r_nodes_iter:
     ordering = list(permutation)
     ordering.append(1)
-    ordering.insert(0, 0)
-    print(ordering)
 
-
+    for graph_topology in create_groupings(ordering):
+        graph_topology.insert(0, {0})
+        print(graph_topology)
 
     break
 
