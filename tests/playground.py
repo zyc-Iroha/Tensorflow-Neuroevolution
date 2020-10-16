@@ -1,4 +1,5 @@
 import sys
+import time
 import random
 import tempfile
 import itertools
@@ -23,14 +24,18 @@ while len(random_conns) < 20:
         random_conns.add((conn_start, new_node))
         random_conns.add((new_node, conn_end))
 
+# random_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+# random_conns = {(7, 3), (2, 1), (2, 5), (8, 1), (3, 6), (0, 4), (4, 1), (5, 4), (2, 6), (4, 5), (2, 3), (5, 3), (0, 1), (2, 7), (3, 5), (6, 8), (6, 1), (3, 1), (3, 4), (0, 2)}
+
+print(random_nodes)
+print(random_conns)
+
 node_dependencies = dict()
 for conn in random_conns:
     if conn[1] in node_dependencies:
         node_dependencies[conn[1]].add(conn[0])
     else:
         node_dependencies[conn[1]] = {conn[0]}
-
-print(node_dependencies)
 
 
 ########################################################################################################################
@@ -52,8 +57,8 @@ r_nodes.remove(0)
 r_nodes.remove(1)
 r_nodes_iter = itertools.permutations(r_nodes)
 
-
-import time
+min_rec_conns = list()
+min_rec_conns_len = sys.maxsize
 
 t_start = time.time()
 
@@ -63,13 +68,39 @@ for permutation in r_nodes_iter:
 
     for graph_topology in create_groupings(ordering):
         graph_topology.insert(0, {0})
-        #print(graph_topology)
 
-    #break
+        rec_conns = set()
+        for conn in random_conns:
+            conn_start_index = None
+            conn_end_index = None
+
+            for level_index in range(len(graph_topology)):
+                if conn[0] in graph_topology[level_index]:
+                    conn_start_index = level_index
+
+                if conn[1] in graph_topology[level_index]:
+                    conn_end_index = level_index
+
+                if conn_start_index is not None and conn_end_index is not None:
+                    break
+
+            if conn_start_index >= conn_end_index:
+                rec_conns.add((conn[0], conn[1]))
+
+            if len(rec_conns) > min_rec_conns_len:
+                break
+
+        if len(rec_conns) < min_rec_conns_len:
+            min_rec_conns = [(graph_topology, rec_conns)]
+            min_rec_conns_len = len(rec_conns)
+
+        if len(rec_conns) == min_rec_conns_len:
+            min_rec_conns.append((graph_topology, rec_conns))
 
 t_end = time.time()
 
-print(f"{t_end-t_start}")
+print(min_rec_conns)
+print(f"{t_end - t_start}")
 
 exit()
 
