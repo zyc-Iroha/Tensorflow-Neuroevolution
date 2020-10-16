@@ -24,8 +24,9 @@ while len(random_conns) < 20:
         random_conns.add((conn_start, new_node))
         random_conns.add((new_node, conn_end))
 
-# random_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-# random_conns = {(7, 3), (2, 1), (2, 5), (8, 1), (3, 6), (0, 4), (4, 1), (5, 4), (2, 6), (4, 5), (2, 3), (5, 3), (0, 1), (2, 7), (3, 5), (6, 8), (6, 1), (3, 1), (3, 4), (0, 2)}
+random_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+random_conns = {(7, 3), (2, 1), (2, 5), (0, 3), (5, 8), (3, 6), (3, 4), (4, 1), (2, 3), (0, 5), (5, 3), (0, 1), (2, 7),
+                (8, 3), (6, 1), (3, 1), (5, 7), (0, 6), (5, 2), (0, 2)}
 
 print(random_nodes)
 print(random_conns)
@@ -47,11 +48,14 @@ def create_groupings(inputs):
     for n in range(1, list_len + 1):
         for split_indices in itertools.combinations(range(1, list_len), n - 1):
             grouping = []
+            grouping_tuple = []
             prev_split_index = None
             for split_index in itertools.chain(split_indices, [None]):
-                grouping.append(set(inputs[prev_split_index:split_index]))
+                group = set(inputs[prev_split_index:split_index])
+                grouping.append(group)
+                grouping_tuple.append(tuple(group))
                 prev_split_index = split_index
-            yield grouping
+            yield grouping, tuple(grouping_tuple)
 
 
 r_nodes = random_nodes.copy()
@@ -61,14 +65,19 @@ r_nodes_iter = itertools.permutations(r_nodes)
 
 min_rec_conns = list()
 min_rec_conns_len = sys.maxsize
+previous_graph_topologies = set()
 
 t_start = time.time()
 
 for permutation in r_nodes_iter:
-    ordering = list(permutation)
-    ordering.append(1)
+    ordering = permutation + (1,)
 
-    for graph_topology in create_groupings(ordering):
+    for graph_topology, graph_topology_tuple in create_groupings(ordering):
+        if graph_topology_tuple in previous_graph_topologies:
+            continue
+        else:
+            previous_graph_topologies.add(graph_topology_tuple)
+
         graph_topology.insert(0, {0})
 
         rec_conns = set()
@@ -95,17 +104,32 @@ for permutation in r_nodes_iter:
         if len(rec_conns) < min_rec_conns_len:
             min_rec_conns = [(graph_topology, rec_conns)]
             min_rec_conns_len = len(rec_conns)
-
-        if len(rec_conns) == min_rec_conns_len:
+        elif len(rec_conns) == min_rec_conns_len:
             min_rec_conns.append((graph_topology, rec_conns))
 
 t_end = time.time()
 
-print(min_rec_conns)
-print(f"{t_end - t_start}")
+print(f"\nprocessing time: {t_end - t_start}")
+
+print(f"\nmin_rec_conns: {min_rec_conns}")
+print(f"len min_rec_conns: {len(min_rec_conns)}")
 
 ########################################################################################################################
 
+min_graph_top_groupings = len(min(min_rec_conns, key=lambda x: len(x[0]))[0])
+
+min_graph_min_rec_conns = list()
+for min_rec_conn_item in min_rec_conns:
+    if len(min_rec_conn_item[0]) == min_graph_top_groupings:
+        min_graph_min_rec_conns.append(min_rec_conn_item)
+
+print(f"\nmin_graph_min_rec_conns: {min_graph_min_rec_conns}")
+print(f"len min_graph_min_rec_conns: {len(min_graph_min_rec_conns)}")
+
+exit()
+
+########################################################################################################################
+'''
 # Create Digraph, setting name and graph orientaion
 dot = Digraph(name='tempgraph', graph_attr={'rankdir': 'TB'})
 
@@ -115,16 +139,85 @@ for conn in random_conns:
 
 # Render created dot graph, optionally showing it
 dot.render(filename='tempgraph', directory=tempfile.gettempdir(), view=True, cleanup=True, format='svg')
-
+'''
 ########################################################################################################################
-
-exit()
 
 node_deps = node_dependencies.copy()
 node_deps[0] = set()
 
-recurrent_conns = list()
+recurrent_conns = set()
 graph_topology = list()
+
+while True:
+    print(f"node_deps: {node_deps}\n")
+
+    # find all nodes in graph having no dependencies in current iteration
+    dependencyless = set()
+    for node, dep in node_deps.items():
+        if len(dep) == 0:
+            dependencyless.add(node)
+
+    if not dependencyless:
+        if node_deps:
+            node_deps_min = None
+            node_deps_excluded = None
+            min_deps_count = sys.maxsize
+
+            for node, node_deps_set in node_deps.items():
+                if node == 1:
+                    continue
+                if len(node_deps_set) < min_deps_count:
+                    min_deps_count = len(node_deps_set)
+                    node_deps_min = {node: node_deps_set}
+                    node_deps_excluded = {node}
+                elif len(node_deps_set) == min_deps_count:
+                    node_deps_min[node] = node_deps_set
+                    node_deps_excluded.add(node)
+
+            print("node_deps: {}".format(node_deps))
+            print("node_deps_min: {}".format(node_deps_min))
+            print("node_deps_excluded: {}".format(node_deps_excluded))
+
+            node_deps_min_adj = node_deps_min.copy()
+            for node, node_deps_min_set in node_deps_min.items():
+                new_node_deps_min_set = node_deps_min_set - node_deps_excluded
+                if not new_node_deps_min_set:
+                    del node_deps_min_adj[node]
+                else:
+                    node_deps_min_adj[node] = new_node_deps_min_set
+            if not node_deps_min_adj:
+                node_deps_min_adj = node_deps_min
+
+            print(f"node_deps_min_adj: {node_deps_min_adj}")
+
+            for node, node_deps_set in node_deps_min_adj.items():
+                for dep_nodes in node_deps_set:
+                    recurrent_conns.add((dep_nodes, node))
+                node_deps[node] = set()
+
+            print(f"node_deps: {node_deps}")
+            print(f"recurrent_conns: {recurrent_conns}\n")
+
+            continue
+
+        break
+
+    # Add dependencyless nodes of current generation to list
+    graph_topology.append(dependencyless)
+
+    # remove keys with empty dependencies and remove all nodes that are considered dependencyless from the
+    # dependencies of other nodes in order to create next iteration
+    for node in dependencyless:
+        del node_deps[node]
+    for node, dep in node_deps.items():
+        node_deps[node] = dep - dependencyless
+
+print(f"final graph_topology: {graph_topology}")
+print(f"final recurrent_conns: {recurrent_conns}")
+
+exit()
+
+########################################################################################################################
 
 while True:
     print(f"node_deps: {node_deps}\n")
