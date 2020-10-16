@@ -52,15 +52,24 @@ r_nodes.remove(0)
 r_nodes.remove(1)
 r_nodes_iter = itertools.permutations(r_nodes)
 
+
+import time
+
+t_start = time.time()
+
 for permutation in r_nodes_iter:
     ordering = list(permutation)
     ordering.append(1)
 
     for graph_topology in create_groupings(ordering):
         graph_topology.insert(0, {0})
-        print(graph_topology)
+        #print(graph_topology)
 
-    break
+    #break
+
+t_end = time.time()
+
+print(f"{t_end-t_start}")
 
 exit()
 
