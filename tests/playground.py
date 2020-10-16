@@ -37,6 +37,8 @@ for conn in random_conns:
     else:
         node_dependencies[conn[1]] = {conn[0]}
 
+print(node_dependencies)
+
 
 ########################################################################################################################
 
@@ -102,8 +104,6 @@ t_end = time.time()
 print(min_rec_conns)
 print(f"{t_end - t_start}")
 
-exit()
-
 ########################################################################################################################
 
 # Create Digraph, setting name and graph orientaion
@@ -117,12 +117,6 @@ for conn in random_conns:
 dot.render(filename='tempgraph', directory=tempfile.gettempdir(), view=True, cleanup=True, format='svg')
 
 ########################################################################################################################
-
-# Interesting special edge case conns
-# node_dependencies = {2: {0, 3, 4, 5, 7}, 1: {0, 2, 3, 6}, 7: {0}, 5: {2, 3, 4}, 3: {0, 2, 4, 5}, 4: {0, 2, 5}, 6: {2}}
-# node_dependencies = {3: {0, 2, 4, 6, 7}, 7: {4}, 2: {0, 3, 4, 5}, 1: {0, 2, 3, 5}, 4: {0, 2, 3}, 5: {0, 3}, 6: {4}}
-# node_dependencies = {3: {0, 7}, 8: {2}, 1: {0, 2, 3, 4, 10}, 2: {0, 6}, 10: {9, 11}, 11: {9}, 4: {0, 5}, 6: {8, 9, 0}, 9: {3}, 5: {3}, 7: {5}}
-# node_dependencies = {3: {0, 2, 4, 5, 6, 7}, 2: {0, 3, 4}, 1: {0, 2, 3}, 7: {2, 6}, 4: {0, 2, 3}, 5: {4}, 6: {0, 4}}
 
 exit()
 
