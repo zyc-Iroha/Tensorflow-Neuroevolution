@@ -6,7 +6,7 @@ import itertools
 from graphviz import Digraph
 
 ########################################################################################################################
-
+'''
 random_nodes = [0, 1]
 random_conns = {(0, 1)}
 while len(random_conns) < 20:
@@ -39,7 +39,6 @@ for conn in random_conns:
         node_dependencies[conn[1]] = {conn[0]}
 
 print(node_dependencies)
-
 
 ########################################################################################################################
 
@@ -125,9 +124,7 @@ for min_rec_conn_item in min_rec_conns:
 
 print(f"\nmin_graph_min_rec_conns: {min_graph_min_rec_conns}")
 print(f"len min_graph_min_rec_conns: {len(min_graph_min_rec_conns)}")
-
-exit()
-
+'''
 ########################################################################################################################
 '''
 # Create Digraph, setting name and graph orientaion
@@ -141,6 +138,12 @@ for conn in random_conns:
 dot.render(filename='tempgraph', directory=tempfile.gettempdir(), view=True, cleanup=True, format='svg')
 '''
 ########################################################################################################################
+
+# previously calculated input for testing purposes
+node_dependencies = {3: {0, 2, 5, 7, 8}, 1: {0, 2, 3, 4, 6}, 5: {0, 2}, 8: {5}, 6: {0, 3}, 4: {3}, 7: {2, 5}, 2: {0, 5}}
+min_graph_min_rec_conns = [([{0}, {2}, {5}, {8, 7}, {3}, {4, 6}, {1}], {(5, 2)}),
+                           ([{0}, {5}, {2}, {8, 7}, {3}, {4, 6}, {1}], {(2, 5)}),
+                           ([{0}, {5}, {8, 2}, {7}, {3}, {4, 6}, {1}], {(2, 5)})]
 
 node_deps = node_dependencies.copy()
 node_deps[0] = set()
@@ -218,7 +221,7 @@ print(f"final recurrent_conns: {recurrent_conns}")
 exit()
 
 ########################################################################################################################
-
+"""
 while True:
     print(f"node_deps: {node_deps}\n")
 
@@ -337,3 +340,4 @@ print(random_conns)
 print(recurrent_conns)
 print("EXIT")
 exit()
+"""
