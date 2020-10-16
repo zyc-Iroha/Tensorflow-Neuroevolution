@@ -4,6 +4,27 @@ import tempfile
 import itertools
 from graphviz import Digraph
 
+
+
+def split_list(data, n):
+    for splits in itertools.combinations(range(1, len(data)), n-1):
+        result = []
+        prev = None
+        for split in itertools.chain(splits, [None]):
+            result.append(data[prev:split])
+            prev = split
+        yield result
+
+print(list(split_list(list(range(8)), 4)))
+
+exit()
+
+
+
+
+
+
+
 ########################################################################################################################
 
 random_nodes = [0, 1]
