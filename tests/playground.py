@@ -164,19 +164,33 @@ while True:
 
     # Recurrency detected
     if not dependencyless:
-        node_deps_min = None
-        node_deps_min_itemcount = sys.maxsize
 
-        for node, node_deps_set in node_deps.items():
-            if len(node_deps_set) < node_deps_min_itemcount:
-                node_deps_min_itemcount = len(node_deps_set)
-                node_deps_min = {node: node_deps_set}
-            elif len(node_deps_set) == node_deps_min_itemcount:
-                node_deps_min[node] = node_deps_set
+        cyclic_deps = node_deps.copy()
+        cyclic_deps_occurences = dict()
+        for node in cyclic_deps.keys():
+            cyclic_deps_occurences[node] = {node}
 
-        print(f"\nnode_deps_min: {node_deps_min}")
+        cyclic_node = None
+        while cyclic_node is None:
+            for node, deps in cyclic_deps.items():
+                new_deps = set()
+                for dep in deps:
+                    for dep_of_dep in node_deps[dep]:
+                        if dep_of_dep not in cyclic_deps_occurences[node]:
+                            new_deps.add(dep_of_dep)
+                            cyclic_deps_occurences[node].add(dep)
 
-        break
+                if not new_deps:
+                    cyclic_node = node
+                    break
+
+                cyclic_deps[node] = new_deps
+
+        # Set all required dependencies of determined cyclic node as recurrent
+        for dep in node_deps[cyclic_node]:
+            recurrent_conns.add((dep, cyclic_node))
+
+        dependencyless.add(cyclic_node)
 
     # Add dependencyless nodes of current generation to list
     graph_topology.append(dependencyless)
@@ -195,3 +209,5 @@ while True:
 
 print(f"\nfinal graph_topology: {graph_topology}")
 print(f"final recurrent_conns: {recurrent_conns}")
+
+print(f"correct final graph topologies and recurrent conns: {min_graph_min_rec_conns}")
