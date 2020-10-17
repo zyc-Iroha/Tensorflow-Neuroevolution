@@ -24,12 +24,12 @@ while len(random_conns) < 20:
         random_conns.add((conn_start, new_node))
         random_conns.add((new_node, conn_end))
 
-random_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-random_conns = {(7, 3), (2, 1), (2, 5), (0, 3), (5, 8), (3, 6), (3, 4), (4, 1), (2, 3), (0, 5), (5, 3), (0, 1), (2, 7),
-                (8, 3), (6, 1), (3, 1), (5, 7), (0, 6), (5, 2), (0, 2)}
+# random_nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+# random_conns = {(7, 3), (2, 1), (2, 5), (0, 3), (5, 8), (3, 6), (3, 4), (4, 1), (2, 3), (0, 5), (5, 3), (0, 1),
+#                 (2, 7), (8, 3), (6, 1), (3, 1), (5, 7), (0, 6), (5, 2), (0, 2)}
 
-print(random_nodes)
-print(random_conns)
+print(f"random_nodes: {random_nodes}")
+print(f"random_conns: {random_conns}")
 
 node_dependencies = dict()
 for conn in random_conns:
@@ -38,7 +38,8 @@ for conn in random_conns:
     else:
         node_dependencies[conn[1]] = {conn[0]}
 
-print(node_dependencies)
+print(f"node_dependencies: {node_dependencies}")
+
 
 ########################################################################################################################
 
@@ -140,10 +141,16 @@ dot.render(filename='tempgraph', directory=tempfile.gettempdir(), view=True, cle
 ########################################################################################################################
 
 # previously calculated input for testing purposes
+'''
 node_dependencies = {3: {0, 2, 5, 7, 8}, 1: {0, 2, 3, 4, 6}, 5: {0, 2}, 8: {5}, 6: {0, 3}, 4: {3}, 7: {2, 5}, 2: {0, 5}}
 min_graph_min_rec_conns = [([{0}, {2}, {5}, {8, 7}, {3}, {4, 6}, {1}], {(5, 2)}),
-                           ([{0}, {5}, {2}, {8, 7}, {3}, {4, 6}, {1}], {(2, 5)}),
-                           ([{0}, {5}, {8, 2}, {7}, {3}, {4, 6}, {1}], {(2, 5)})]
+                            ([{0}, {5}, {2}, {8, 7}, {3}, {4, 6}, {1}], {(2, 5)}),
+                            ([{0}, {5}, {8, 2}, {7}, {3}, {4, 6}, {1}], {(2, 5)})]
+'''
+node_dependencies = {3: {2, 4, 5, 7, 8}, 8: {4}, 2: {0, 3, 5}, 1: {0, 2, 3, 4}, 7: {2, 6}, 6: {3}, 4: {0, 2, 3},
+                     5: {3, 6}}
+min_graph_min_rec_conns = [([{0}, {6}, {5}, {2}, {4}, {8, 7}, {3}, {1}], {(3, 2), (3, 4), (3, 6), (3, 5)}),
+                           ([{0}, {6}, {5}, {2}, {4, 7}, {8}, {3}, {1}], {(3, 2), (3, 4), (3, 6), (3, 5)})]
 
 node_deps = node_dependencies.copy()
 node_deps[0] = set()
