@@ -6,7 +6,9 @@ class DeepNEATModel(tf.keras.Model):
     """"""
 
     def __init__(self,
-                 genome_graph,
+                 graph_topology,
+                 recurrent_conns,
+                 genome_nodes,
                  preprocessing_layers,
                  input_shape,
                  input_layers,

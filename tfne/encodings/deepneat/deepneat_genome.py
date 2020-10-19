@@ -56,11 +56,14 @@ class DeepNEATGenome(BaseGenome):
 
         # Preprocess genotype information as required by DeepNEATModel and useful for evolutionary operations on this
         # genome
-        self.XXXXXXXXX = None
+        self.graph_topology = None
+        self.recurrent_conns = None
         self._preprocess_genotype()
 
         # Create model with genotype
-        self.model = DeepNEATModel(None,
+        self.model = DeepNEATModel(self.graph_topology,
+                                   self.recurrent_conns,
+                                   self.genome_nodes,
                                    preprocessing_layers,
                                    input_shape,
                                    input_layers,
@@ -118,6 +121,14 @@ class DeepNEATGenome(BaseGenome):
                self.genome_conns_disabled, \
                self.preprocessing_layers, \
                self.optimizer
+
+    def get_graph_topology(self) -> [{int}]:
+        """"""
+        return self.graph_topology
+
+    def get_recurrent_conns(self) -> {(int, int)}:
+        """"""
+        return self.recurrent_conns
 
     def get_model(self) -> tf.keras.Model:
         """"""
