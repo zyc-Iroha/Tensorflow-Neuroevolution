@@ -44,25 +44,22 @@ class DeepNEATSelection:
 
         #### Rebase Species Representative ####
         if self.spec_rebase_repr:
-            all_spec_repr_ids = set(self.pop.species_repr.values())
-            for spec_id, spec_repr_id in self.pop.species_repr.items():
-                other_spec_repr_ids = all_spec_repr_ids - {spec_repr_id}
+            for spec_id, spec_genome_ids in self.pop.species.items():
+                cumulative_genome_distance = dict()
+                for genome_id in spec_genome_ids:
 
-                spec_genome_ids_sorted = sorted(self.pop.species[spec_id],
-                                                key=lambda x: self.pop.genomes[x].get_fitness(),
-                                                reverse=True)
-                for genome_id in spec_genome_ids_sorted:
-                    if genome_id == spec_repr_id:
-                        # Best species genome already representative. Abort search.
-                        break
                     genome = self.pop.genomes[genome_id]
-                    distance_to_other_spec_repr = [
-                        self._calculate_genome_distance(genome, self.pop.genomes[other_genome_id])
-                        for other_genome_id in other_spec_repr_ids]
-                    if all(distance >= self.spec_distance for distance in distance_to_other_spec_repr):
-                        # New best species representative found. Set as representative and abort search
-                        self.pop.species_repr[spec_id] = genome_id
-                        break
+                    cumulative_genome_distance[genome_id] = 0
+
+                    for other_genome_id in spec_genome_ids:
+                        if genome_id == other_genome_id:
+                            continue
+
+                        genome_distance = self._calculate_genome_distance(genome, self.pop.genomes[other_genome_id])
+                        cumulative_genome_distance[genome_id] += genome_distance
+
+                center_genome_id = min(cumulative_genome_distance, key=cumulative_genome_distance.get)
+                self.pop.species_repr[spec_id] = center_genome_id
 
         #### Generational Parent Determination ####
         spec_parents = dict()
