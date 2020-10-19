@@ -52,7 +52,7 @@ class DeepNEATEncoding(BaseEncoding):
             self.gene_to_gene_id[gene_key] = self.gene_id_counter
 
         gene_id = self.gene_to_gene_id[gene_key]
-        return gene_id, (node, layer)
+        return gene_id, [node, layer]
 
     def create_conn_gene(self, conn_start, conn_end) -> (int, (int, int)):
         """"""
@@ -62,7 +62,7 @@ class DeepNEATEncoding(BaseEncoding):
             self.gene_to_gene_id[gene_key] = self.gene_id_counter
 
         gene_id = self.gene_to_gene_id[gene_key]
-        return gene_id, (conn_start, conn_end)
+        return gene_id, [conn_start, conn_end, None]
 
     def get_node_for_split(self, conn_start, conn_end) -> int:
         """"""
