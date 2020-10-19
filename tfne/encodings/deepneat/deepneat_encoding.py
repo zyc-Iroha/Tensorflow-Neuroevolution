@@ -44,7 +44,7 @@ class DeepNEATEncoding(BaseEncoding):
         if initial_state is not None:
             raise NotImplementedError("TODO")
 
-    def create_node_gene(self, node, layer) -> (int, (int, str)):
+    def create_node_gene(self, node, layer) -> (int, [int, str]):
         """"""
         gene_key = (node,)
         if gene_key not in self.gene_to_gene_id:
@@ -54,7 +54,7 @@ class DeepNEATEncoding(BaseEncoding):
         gene_id = self.gene_to_gene_id[gene_key]
         return gene_id, [node, layer]
 
-    def create_conn_gene(self, conn_start, conn_end) -> (int, (int, int)):
+    def create_conn_gene(self, conn_start, conn_end) -> (int, [int, int, None]):
         """"""
         gene_key = (conn_start, conn_end)
         if gene_key not in self.gene_to_gene_id:
