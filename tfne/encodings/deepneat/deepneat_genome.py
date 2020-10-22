@@ -58,6 +58,7 @@ class DeepNEATGenome(BaseGenome):
         # genome
         self.graph_topology = None
         self.recurrent_conns = None
+        self.node_output_dims = None
         self._preprocess_genotype()
 
         # Create model with genotype
@@ -89,7 +90,16 @@ class DeepNEATGenome(BaseGenome):
 
     def _preprocess_genotype(self):
         """"""
-        pass
+        # TODO PROCESS PROPERLY
+        self.graph_topology = None
+        self.recurrent_conns = None
+        self.node_output_dims = None
+
+        # FIXME STUBBY PROCESSING OF THE NODE OUTPUT DIMS
+        import random
+        self.node_output_dims = dict()
+        for (node, _) in self.genome_nodes.values():
+            self.node_output_dims[node] = random.randint(2, 5)
 
     def reset_states(self) -> ():
         """"""
@@ -129,6 +139,10 @@ class DeepNEATGenome(BaseGenome):
     def get_recurrent_conns(self) -> {(int, int)}:
         """"""
         return self.recurrent_conns
+
+    def get_node_output_dims(self) -> {int: int}:
+        """"""
+        return self.node_output_dims
 
     def get_model(self) -> tf.keras.Model:
         """"""

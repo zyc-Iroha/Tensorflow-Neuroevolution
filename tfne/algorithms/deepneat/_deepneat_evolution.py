@@ -1,6 +1,7 @@
 import math
 import random
 from tfne.encodings.deepneat import DeepNEATGenome
+from tfne.helper_functions import round_with_step
 
 
 class DeepNEATEvolution:
@@ -127,6 +128,8 @@ class DeepNEATEvolution:
         parent_genome = self.pop.genomes[parent_genome_id]
         g_nodes, g_conns_enabled, g_conns_disabled, preprocessing_layers, optimizer = parent_genome.get_genotype()
 
+        node_output_dims = parent_genome.get_node_output_dims()
+
         number_of_nodes_to_add = math.ceil(self.mutation_degree * len(g_nodes))
         gene_ids_to_split = random.sample(g_conns_enabled.keys(), k=number_of_nodes_to_add)
 
@@ -137,8 +140,42 @@ class DeepNEATEvolution:
             g_conns_disabled[gene_id_to_split] = g_conns_enabled[gene_id_to_split]
             del g_conns_enabled[gene_id_to_split]
 
+            input_dim = node_output_dims[conn_start]
+            chosen_layer = self.rng.choice(self.available_layers[input_dim], p=self.available_layers_p[input_dim])
+
+            layer_config = dict()
+            for layer_param, layer_param_val_range in self.layer_params[chosen_layer].items():
+                if isinstance(layer_param_val_range, dict):
+                    if isinstance(layer_param_val_range['min'], int) \
+                            and isinstance(layer_param_val_range['max'], int) \
+                            and isinstance(layer_param_val_range['step'], int):
+                        layer_param_random = random.randint(layer_param_val_range['min'],
+                                                            layer_param_val_range['max'])
+                        chosen_layer_param = round_with_step(layer_param_random,
+                                                             layer_param_val_range['min'],
+                                                             layer_param_val_range['max'],
+                                                             layer_param_val_range['step'])
+                    elif isinstance(layer_param_val_range['min'], float) \
+                            and isinstance(layer_param_val_range['max'], float) \
+                            and isinstance(layer_param_val_range['step'], float):
+                        layer_param_random = random.uniform(layer_param_val_range['min'],
+                                                            layer_param_val_range['max'])
+                        chosen_layer_param = round_with_step(layer_param_random,
+                                                             layer_param_val_range['min'],
+                                                             layer_param_val_range['max'],
+                                                             layer_param_val_range['step'])
+                    else:
+                        raise NotImplementedError(
+                            f"Config parameter '{layer_param}' of the {chosen_layer} layer section "
+                            f"is of type dict though the dict values are not of type int or float")
+                    layer_config[layer_param] = chosen_layer_param
+                elif isinstance(layer_param_val_range, list):
+                    layer_config[layer_param] = random.choice(layer_param_val_range)
+                else:
+                    layer_config[layer_param] = layer_param_val_range
+
             new_node = self.enc.get_node_for_split(conn_start, conn_end)
-            new_layer = None
+            new_layer = {'class_name': chosen_layer, 'config': layer_config}
 
             gene_id, gene = self.enc.create_node_gene(node=new_node, layer=new_layer)
             g_nodes[gene_id] = gene
