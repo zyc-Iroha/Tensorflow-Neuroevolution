@@ -83,7 +83,7 @@ class DeepNEATEvolution:
             if n != 0:
                 possible_end_nodes.append(n)
 
-        while number_of_conns_added < number_of_conns_to_add:
+        while number_of_conns_added < number_of_conns_to_add and possible_start_nodes:
 
             random.shuffle(possible_start_nodes)
             random.shuffle(possible_end_nodes)
@@ -102,14 +102,12 @@ class DeepNEATEvolution:
                             del g_conns_disabled[gene_id]
 
                         conn_added_flag = True
+                        break
 
                 if conn_added_flag:
                     break
-
-            # Break loop of adding connections as all possible start node and end node combinations have been explored
-            # but it was not possible to add a new connection
-            if not conn_added_flag:
-                break
+                else:
+                    possible_start_nodes.remove(start_node)
 
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
@@ -197,16 +195,55 @@ class DeepNEATEvolution:
 
     def _mutation_rem_conn(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
-        parent_mutation = "stubby"
-        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-        parent_optimizer = parent_genome.get_genotype()
+        parent_mutation = {'parent_id': parent_genome_id,
+                           'mutation': 'rem_conn',
+                           'removed_genes': list()}
+
+        parent_genome = self.pop.genomes[parent_genome_id]
+        g_nodes, g_conns_enabled, g_conns_disabled, preprocessing_layers, optimizer = parent_genome.get_genotype()
+
+        node_outgoing_count = dict()
+        node_incoming_count = dict()
+        for (conn_start, conn_end) in g_conns_enabled.values():
+            if conn_start not in node_outgoing_count:
+                node_outgoing_count[conn_start] = 1
+            else:
+                node_outgoing_count[conn_start] += 1
+
+            if conn_end not in node_incoming_count:
+                node_incoming_count[conn_end] = 1
+            else:
+                node_incoming_count[conn_end] += 1
+
+        removable_conn_gene_ids = list()
+        for gene_id, (conn_start, conn_end) in g_conns_enabled.items():
+            if node_incoming_count[conn_end] >= 2 and node_outgoing_count[conn_start] >= 2:
+                node_incoming_count[conn_end] -= 1
+                node_outgoing_count[conn_start] -= 1
+
+                removable_conn_gene_ids.append((True, gene_id))
+
+        for gene_id in g_conns_disabled.keys():
+            removable_conn_gene_ids.append((False, gene_id))
+
+        number_of_conns_to_rem = min(math.ceil(self.mutation_degree * (len(g_conns_enabled) + len(g_conns_disabled))),
+                                     len(removable_conn_gene_ids))
+
+        gene_ids_to_remove = random.sample(removable_conn_gene_ids, k=number_of_conns_to_rem)
+        for gene_enabled, gene_id in gene_ids_to_remove:
+            if gene_enabled:
+                del g_conns_enabled[gene_id]
+            else:
+                del g_conns_disabled[gene_id]
+            parent_mutation['removed_genes'].append(gene_id)
+
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
-                                      genome_nodes=parent_genome_nodes,
-                                      genome_conns_enabled=parent_genome_conns_enabled,
-                                      genome_conns_disabled=parent_genome_conns_disabled,
-                                      preprocessing_layers=parent_preprocessing_layers,
-                                      optimizer=parent_optimizer)
+                                      genome_nodes=g_nodes,
+                                      genome_conns_enabled=g_conns_enabled,
+                                      genome_conns_disabled=g_conns_disabled,
+                                      preprocessing_layers=preprocessing_layers,
+                                      optimizer=optimizer)
 
     def _mutation_rem_node(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
