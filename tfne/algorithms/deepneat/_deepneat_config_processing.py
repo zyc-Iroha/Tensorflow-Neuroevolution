@@ -1,4 +1,5 @@
 import statistics
+import numpy as np
 from tfne.helper_functions import read_option_from_config, create_list_with_probabilities
 
 
@@ -193,6 +194,8 @@ class DeepNEATConfigProcessing:
         if self.consistency_evals is None or self.consistency_evals < 1:
             self.consistency_evals = 1
 
+        if self.mutation_degree == 'single':
+            self.mutation_degree = float(np.nextafter(0, 1))
+
     def _sanity_check_config(self):
         """"""
-        pass

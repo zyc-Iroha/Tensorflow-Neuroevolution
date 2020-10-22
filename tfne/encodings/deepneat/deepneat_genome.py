@@ -116,11 +116,11 @@ class DeepNEATGenome(BaseGenome):
 
     def get_genotype(self) -> ({int: (int, str)}, {int: (int, int)}, {int: (int, int)}, [dict], dict):
         """"""
-        return self.genome_nodes, \
-               self.genome_conns_enabled, \
-               self.genome_conns_disabled, \
-               self.preprocessing_layers, \
-               self.optimizer
+        return self.genome_nodes.copy(), \
+               self.genome_conns_enabled.copy(), \
+               self.genome_conns_disabled.copy(), \
+               self.preprocessing_layers.copy(), \
+               self.optimizer.copy()
 
     def get_graph_topology(self) -> [{int}]:
         """"""

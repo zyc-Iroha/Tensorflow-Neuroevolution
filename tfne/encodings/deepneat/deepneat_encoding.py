@@ -54,7 +54,7 @@ class DeepNEATEncoding(BaseEncoding):
         gene_id = self.gene_to_gene_id[gene_key]
         return gene_id, [node, layer]
 
-    def create_conn_gene(self, conn_start, conn_end) -> (int, [int, int, None]):
+    def create_conn_gene(self, conn_start, conn_end) -> (int, (int, int)):
         """"""
         gene_key = (conn_start, conn_end)
         if gene_key not in self.gene_to_gene_id:
@@ -62,7 +62,7 @@ class DeepNEATEncoding(BaseEncoding):
             self.gene_to_gene_id[gene_key] = self.gene_id_counter
 
         gene_id = self.gene_to_gene_id[gene_key]
-        return gene_id, [conn_start, conn_end, None]
+        return gene_id, (conn_start, conn_end)
 
     def get_node_for_split(self, conn_start, conn_end) -> int:
         """"""
@@ -83,7 +83,7 @@ class DeepNEATEncoding(BaseEncoding):
                       optimizer) -> (int, DeepNEATGenome):
         """"""
         self.genome_id_counter += 1
-        # Genome genotype: (genome_graph, preprocessing_layers, optimizer)
+        # Genome genotype: (genome_nodes, genome_conns_enabled, genome_conns_disabled, preprocessing_layers, optimizer)
         return self.genome_id_counter, DeepNEATGenome(genome_id=self.genome_id_counter,
                                                       parent_mutation=parent_mutation,
                                                       generation=generation,

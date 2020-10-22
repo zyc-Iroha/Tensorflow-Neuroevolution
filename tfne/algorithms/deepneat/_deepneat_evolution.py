@@ -1,3 +1,4 @@
+import math
 import random
 from tfne.encodings.deepneat import DeepNEATGenome
 
@@ -19,39 +20,37 @@ class DeepNEATEvolution:
                 chosen_mutation = self.rng.choice(self.mutation_methods, p=self.mutation_methods_p)
 
                 if chosen_mutation == 'add_conn':
-                    parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                    new_genome_id, new_genome = self._mutation_add_conn(parent_genome)
+                    parent_genome_id = random.choice(spec_parents[spec_id])
+                    new_genome_id, new_genome = self._mutation_add_conn(parent_genome_id)
 
                 elif chosen_mutation == 'add_node':
-                    parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                    new_genome_id, new_genome = self._mutation_add_node(parent_genome)
+                    parent_genome_id = self.pop.genomes[random.choice(spec_parents[spec_id])]
+                    new_genome_id, new_genome = self._mutation_add_node(parent_genome_id)
 
                 elif chosen_mutation == 'rem_conn':
-                    parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                    new_genome_id, new_genome = self._mutation_rem_conn(parent_genome)
+                    parent_genome_id = self.pop.genomes[random.choice(spec_parents[spec_id])]
+                    new_genome_id, new_genome = self._mutation_rem_conn(parent_genome_id)
 
                 elif chosen_mutation == 'rem_node':
-                    parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                    new_genome_id, new_genome = self._mutation_rem_node(parent_genome)
+                    parent_genome_id = self.pop.genomes[random.choice(spec_parents[spec_id])]
+                    new_genome_id, new_genome = self._mutation_rem_node(parent_genome_id)
 
                 elif chosen_mutation == 'node_layer':
-                    parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                    new_genome_id, new_genome = self._mutation_node_layer(parent_genome)
+                    parent_genome_id = self.pop.genomes[random.choice(spec_parents[spec_id])]
+                    new_genome_id, new_genome = self._mutation_node_layer(parent_genome_id)
 
                 elif chosen_mutation == 'hyperparam':
-                    parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                    new_genome_id, new_genome = self._mutation_hyperparam(parent_genome)
+                    parent_genome_id = self.pop.genomes[random.choice(spec_parents[spec_id])]
+                    new_genome_id, new_genome = self._mutation_hyperparam(parent_genome_id)
 
                 elif chosen_mutation == 'crossover':
                     if len(spec_parents[spec_id]) >= 2:
                         parent_genome_1_id, parent_genome_2_id = random.sample(spec_parents[spec_id], k=2)
-                        parent_genome_1 = self.pop.genomes[parent_genome_1_id]
-                        parent_genome_2 = self.pop.genomes[parent_genome_2_id]
-                        new_genome_id, new_genome = self._crossover(parent_genome_1, parent_genome_2)
+                        new_genome_id, new_genome = self._crossover(parent_genome_1_id, parent_genome_2_id)
 
                     else:
-                        parent_genome = self.pop.genomes[random.choice(spec_parents[spec_id])]
-                        new_genome_id, new_genome = self._mutation_node_layer(parent_genome)
+                        parent_genome_id = self.pop.genomes[random.choice(spec_parents[spec_id])]
+                        new_genome_id, new_genome = self._mutation_node_layer(parent_genome_id)
 
                 else:
                     raise RuntimeError("COMMENT")
@@ -62,11 +61,68 @@ class DeepNEATEvolution:
         #### Return ####
         return new_genome_ids
 
-    def _mutation_add_conn(self, parent_genome) -> (int, DeepNEATGenome):
+    def _mutation_add_conn(self, parent_genome_id) -> (int, DeepNEATGenome):
+        """"""
+        parent_mutation = {'parent_id': parent_genome_id,
+                           'mutation': 'add_conn',
+                           'added_genes': list()}
+
+        parent_genome = self.pop.genomes[parent_genome_id]
+        g_nodes, g_conns_enabled, g_conns_disabled, preprocessing_layers, optimizer = parent_genome.get_genotype()
+
+        number_of_conns_added = 0
+        number_of_conns_to_add = math.ceil(self.mutation_degree * (len(g_conns_enabled) + len(g_conns_disabled)))
+
+        possible_start_nodes = list()
+        possible_end_nodes = list()
+        for node in g_nodes.values():
+            n = node[0]
+            if n != 1:
+                possible_start_nodes.append(n)
+            if n != 0:
+                possible_end_nodes.append(n)
+
+        while number_of_conns_added < number_of_conns_to_add:
+
+            random.shuffle(possible_start_nodes)
+            random.shuffle(possible_end_nodes)
+
+            conn_added_flag = False
+            for start_node in possible_start_nodes:
+                for end_node in possible_end_nodes:
+                    conn = (start_node, end_node)
+
+                    if conn not in g_conns_enabled.values():
+                        gene_id, gene = self.enc.create_conn_gene(conn_start=start_node, conn_end=end_node)
+                        g_conns_enabled[gene_id] = gene
+                        parent_mutation['added_genes'].append(gene_id)
+                        number_of_conns_added += 1
+                        if conn in g_conns_disabled.values():
+                            del g_conns_disabled[gene_id]
+
+                        conn_added_flag = True
+
+                if conn_added_flag:
+                    break
+
+            # Break loop of adding connections as all possible start node and end node combinations have been explored
+            # but it was not possible to add a new connection
+            if not conn_added_flag:
+                break
+
+        return self.enc.create_genome(parent_mutation=parent_mutation,
+                                      generation=self.pop.generation_counter,
+                                      genome_nodes=g_nodes,
+                                      genome_conns_enabled=g_conns_enabled,
+                                      genome_conns_disabled=g_conns_disabled,
+                                      preprocessing_layers=preprocessing_layers,
+                                      optimizer=optimizer)
+
+    def _mutation_add_node(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome.get_genotype()
+        parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
                                       genome_nodes=parent_genome_nodes,
@@ -75,11 +131,11 @@ class DeepNEATEvolution:
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
-    def _mutation_add_node(self, parent_genome) -> (int, DeepNEATGenome):
+    def _mutation_rem_conn(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome.get_genotype()
+        parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
                                       genome_nodes=parent_genome_nodes,
@@ -88,11 +144,11 @@ class DeepNEATEvolution:
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
-    def _mutation_rem_conn(self, parent_genome) -> (int, DeepNEATGenome):
+    def _mutation_rem_node(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome.get_genotype()
+        parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
                                       genome_nodes=parent_genome_nodes,
@@ -101,11 +157,11 @@ class DeepNEATEvolution:
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
-    def _mutation_rem_node(self, parent_genome) -> (int, DeepNEATGenome):
+    def _mutation_node_layer(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome.get_genotype()
+        parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
                                       genome_nodes=parent_genome_nodes,
@@ -114,11 +170,11 @@ class DeepNEATEvolution:
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
-    def _mutation_node_layer(self, parent_genome) -> (int, DeepNEATGenome):
+    def _mutation_hyperparam(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome.get_genotype()
+        parent_optimizer = parent_genome.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
                                       genome_nodes=parent_genome_nodes,
@@ -127,24 +183,11 @@ class DeepNEATEvolution:
                                       preprocessing_layers=parent_preprocessing_layers,
                                       optimizer=parent_optimizer)
 
-    def _mutation_hyperparam(self, parent_genome) -> (int, DeepNEATGenome):
+    def _crossover(self, parent_genome_1_id, parent_genome_2_id) -> (int, DeepNEATGenome):
         """"""
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome.get_genotype()
-        return self.enc.create_genome(parent_mutation=parent_mutation,
-                                      generation=self.pop.generation_counter,
-                                      genome_nodes=parent_genome_nodes,
-                                      genome_conns_enabled=parent_genome_conns_enabled,
-                                      genome_conns_disabled=parent_genome_conns_disabled,
-                                      preprocessing_layers=parent_preprocessing_layers,
-                                      optimizer=parent_optimizer)
-
-    def _crossover(self, parent_genome_1, parent_genome_2) -> (int, DeepNEATGenome):
-        """"""
-        parent_mutation = "stubby"
-        parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
-            parent_optimizer = parent_genome_1.get_genotype()
+        parent_optimizer = parent_genome_1.get_genotype()
         return self.enc.create_genome(parent_mutation=parent_mutation,
                                       generation=self.pop.generation_counter,
                                       genome_nodes=parent_genome_nodes,
