@@ -247,6 +247,53 @@ class DeepNEATEvolution:
 
     def _mutation_rem_node(self, parent_genome_id) -> (int, DeepNEATGenome):
         """"""
+        parent_mutation = {'parent_id': parent_genome_id,
+                           'mutation': 'rem_node',
+                           'removed_genes': list()}
+
+        parent_genome = self.pop.genomes[parent_genome_id]
+        g_nodes, g_conns_enabled, g_conns_disabled, preprocessing_layers, optimizer = parent_genome.get_genotype()
+
+        number_of_nodes_to_remove = math.ceil(self.mutation_degree * (len(g_nodes) - 2))
+        possible_node_gene_ids_to_rem = list(g_nodes.keys())
+        possible_node_gene_ids_to_rem.remove(1)
+        possible_node_gene_ids_to_rem.remove(2)
+        node_gene_ids_to_remove = random.sample(possible_node_gene_ids_to_rem, k=number_of_nodes_to_remove)
+
+        for node_gene_id_to_remove in node_gene_ids_to_remove:
+            node_to_remove = g_nodes[node_gene_id_to_remove][0]
+            del g_nodes[node_gene_id_to_remove]
+            parent_mutation['removed_genes'].append(node_gene_id_to_remove)
+
+            replacement_start_nodes = set()
+            replacement_end_nodes = set()
+
+            conn_gene_ids_to_remove = set()
+            for gene_id, (conn_start, conn_end) in g_conns_enabled.items():
+                if conn_start == node_to_remove:
+                    replacement_end_nodes.add(conn_end)
+                    conn_gene_ids_to_remove.add(gene_id)
+                elif conn_end == node_to_remove:
+                    replacement_start_nodes.add(conn_start)
+                    conn_gene_ids_to_remove.add(gene_id)
+            for gene_id in conn_gene_ids_to_remove:
+                del g_conns_enabled[gene_id]
+
+            conn_gene_ids_to_remove = set()
+            for gene_id, (conn_start, conn_end) in g_conns_disabled.items():
+                if conn_start == node_to_remove or conn_end == node_to_remove:
+                    conn_gene_ids_to_remove.add(gene_id)
+            for gene_id in conn_gene_ids_to_remove:
+                del g_conns_disabled[gene_id]
+
+            for start_node in replacement_start_nodes:
+                for end_node in replacement_end_nodes:
+                    gene_id, gene = self.enc.create_conn_gene(conn_start=start_node, conn_end=end_node)
+                    if gene_id not in g_conns_enabled:
+                        g_conns_enabled[gene_id] = gene
+                    if gene_id in g_conns_disabled:
+                        del g_conns_disabled[gene_id]
+
         parent_mutation = "stubby"
         parent_genome_nodes, parent_genome_conns_enabled, parent_genome_conns_disabled, parent_preprocessing_layers, \
         parent_optimizer = parent_genome.get_genotype()
